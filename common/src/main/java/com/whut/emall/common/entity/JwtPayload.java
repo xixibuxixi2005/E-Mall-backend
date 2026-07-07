@@ -1,4 +1,4 @@
-package com.whut.emall.common.entitiy;
+package com.whut.emall.common.entity;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

@@ -13,7 +13,7 @@ import org.springframework.stereotype.Component;
 import io.jsonwebtoken.SignatureAlgorithm;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.whut.emall.common.entitiy.JwtPayload;
+import com.whut.emall.common.entity.JwtPayload;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;

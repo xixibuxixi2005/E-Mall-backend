@@ -2,7 +2,7 @@ import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 
-import com.whut.emall.common.entitiy.JwtPayload;
+import com.whut.emall.common.entity.JwtPayload;
 import com.whut.emall.common.utils.JwtUtils;
 
 public class Tests {
