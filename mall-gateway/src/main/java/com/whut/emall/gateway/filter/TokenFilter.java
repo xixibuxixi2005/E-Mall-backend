@@ -24,8 +24,13 @@ public class TokenFilter implements GlobalFilter,Ordered{
         "/api/biz/test",
         "/api/auth",
     };
-
+    private final String[] nonPublicPrefix = {
+        "/api/biz/test/welcome",
+    };
     private boolean isPublic(String path) {
+        for(var prefix: nonPublicPrefix) {
+            if (path.startsWith(prefix)) return false;
+        }
         for(var prefix: publicPrefix) {
             if (path.startsWith(prefix)) return true;
         }
@@ -61,7 +66,7 @@ public class TokenFilter implements GlobalFilter,Ordered{
                     .header("X-Username", payload.getUsername())
                     .build();
 
-        exchange.mutate().request(request).build();
+        exchange = exchange.mutate().request(request).build();
 
         return chain.filter(exchange);
     }
