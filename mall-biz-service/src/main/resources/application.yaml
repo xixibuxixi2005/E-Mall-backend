@@ -1,0 +1,10 @@
+server:
+  port: 11000
+
+spring:
+  application:
+    name: mall-biz-service
+  cloud:
+    nacos:
+      discovery:
+        server-addr: 127.0.0.1:8848

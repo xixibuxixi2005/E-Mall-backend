@@ -9,7 +9,7 @@
     <version>1.0-SNAPSHOT</version>
     <packaging>pom</packaging>
     <modules>
-        <module>business-service</module>
+        <module>mall-biz-service</module>
     </modules>
 
     <parent>
@@ -38,6 +38,11 @@
                 <version>2025.0.0.0</version>
                 <type>pom</type>
                 <scope>import</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.projectlombok</groupId>
+                <artifactId>lombok</artifactId>
+                <version>1.18.46</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
