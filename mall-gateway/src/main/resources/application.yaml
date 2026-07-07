@@ -6,7 +6,8 @@ spring:
     name: mall-gateway
   cloud:
     nacos:
-      server-addr: 127.0.0.1:8848
+      discovery:
+        server-addr: 127.0.0.1:8848
     gateway:
       routes:
       - id: mall-ai-service
@@ -19,8 +20,7 @@ spring:
       - id: mall-biz-service
         uri: lb://mall-biz-service
         predicates:
-          - Path=/api/biz/**
-          - Path=/api/auth/**
+          - Path=/api/biz/**, /api/auth/**
         filters:
         - StripPrefix=1   # 除去 /api 前缀
       
@@ -30,4 +30,4 @@ spring:
             allowed-origins: "*"  # TODO 后期改为前端url
             allowed-methods: "*"
             allowed-headers: "*"
-            allow-credentials: true
+            # allow-credentials: true

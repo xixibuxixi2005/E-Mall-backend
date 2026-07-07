@@ -2,11 +2,11 @@ package com.whut.emall.gateway.filter;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
 import org.springframework.cloud.gateway.filter.GlobalFilter;
 import org.springframework.core.Ordered;
 import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Component;
 import org.springframework.web.server.ServerWebExchange;
 
 import com.whut.emall.common.entitiy.JwtPayload;
@@ -15,17 +15,19 @@ import com.whut.emall.common.utils.JwtUtils;
 import jakarta.annotation.Resource;
 import reactor.core.publisher.Mono;
 
+@Component
 public class TokenFilter implements GlobalFilter,Ordered{
     @Resource JwtUtils jwtUtils;
     Logger logger = LoggerFactory.getLogger(getClass());
 
     private final String[] publicPrefix = {
-        "/api/v1/auth"
+        "/api/biz/test",
+        "/api/auth",
     };
 
     private boolean isPublic(String path) {
         for(var prefix: publicPrefix) {
-            if (prefix.startsWith(prefix)) return true;
+            if (path.startsWith(prefix)) return true;
         }
         return false;
     }
