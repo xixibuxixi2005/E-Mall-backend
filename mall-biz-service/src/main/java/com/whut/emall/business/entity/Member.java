@@ -1,4 +1,4 @@
-package com.whut.emall.entity;
+package com.whut.emall.business.entity;
 
 import java.sql.Date;
 
