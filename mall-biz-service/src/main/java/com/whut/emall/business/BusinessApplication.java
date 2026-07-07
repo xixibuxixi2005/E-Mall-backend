@@ -4,7 +4,10 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 
-@SpringBootApplication
+@SpringBootApplication(scanBasePackages = {
+    "com.whut.emall.business",
+    "com.whut.emall.common"
+})
 @EnableDiscoveryClient
 public class BusinessApplication {
     public static void main(String[] args) {
