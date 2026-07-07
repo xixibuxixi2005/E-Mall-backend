@@ -9,7 +9,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.web.server.ServerWebExchange;
 
-import com.whut.emall.common.entitiy.JwtPayload;
+import com.whut.emall.common.entity.ApiException;
+import com.whut.emall.common.entity.JwtPayload;
 import com.whut.emall.common.utils.JwtUtils;
 
 import jakarta.annotation.Resource;
@@ -48,17 +49,15 @@ public class TokenFilter implements GlobalFilter,Ordered{
         
         String token = request.getHeaders().getFirst("Authorization");
         if (token == null || token.isEmpty() || !token.startsWith("Bearer ")) {
-            response.setStatusCode(HttpStatus.UNAUTHORIZED);
-            return response.setComplete();
+            throw ApiException.err(HttpStatus.UNAUTHORIZED.value(), "Authorization token格式错误");
         }
 
         JwtPayload payload;
         try {
             payload = jwtUtils.verify(token.substring(7));
         } catch (Exception e) {
-            logger.error(e.getLocalizedMessage());
-            response.setStatusCode(HttpStatus.UNAUTHORIZED);
-            return response.setComplete();
+            logger.error(e.getLocalizedMessage(), e);
+            throw ApiException.err(HttpStatus.UNAUTHORIZED.value(), "Authorization token验证失败");
         }
 
         request = request.mutate()
