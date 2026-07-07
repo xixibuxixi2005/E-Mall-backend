@@ -1,0 +1,33 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: mall-gateway
+  cloud:
+    nacos:
+      server-addr: 127.0.0.1:8848
+    gateway:
+      routes:
+      - id: mall-ai-service
+        uri: lb://mall-ai-service
+        predicates:
+          - Path=/api/ai/**
+        filters:
+        - StripPrefix=2   # 除去 /api/ai 前缀
+
+      - id: mall-biz-service
+        uri: lb://mall-biz-service
+        predicates:
+          - Path=/api/biz/**
+          - Path=/api/auth/**
+        filters:
+        - StripPrefix=1   # 除去 /api 前缀
+      
+      globalcors:
+        cors-configurations:
+          '[/**]':
+            allowed-origins: "*"  # TODO 后期改为前端url
+            allowed-methods: "*"
+            allowed-headers: "*"
+            allow-credentials: true
