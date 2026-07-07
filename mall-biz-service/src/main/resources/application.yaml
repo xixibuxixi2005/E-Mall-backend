@@ -8,3 +8,11 @@ spring:
     nacos:
       discovery:
         server-addr: 127.0.0.1:8848
+  datasource:
+    url: "jdbc:mysql://127.0.0.1:3306/emall"
+    username: emall
+    password: emmmmmmmmmeeeall
+
+mybatis-plus:
+  configuration:
+    map-underscore-to-camel-case: true
