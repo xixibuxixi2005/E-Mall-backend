@@ -61,4 +61,12 @@ public class AuthService {
         }
         return result;
     }
+
+    public Map<String, String> refresh(String token, String refreshToken) {
+        JwtPayload tokenJWT = jwtUtils.parserAccessToken(token);
+        JwtPayload refreshJWT = jwtUtils.parserRefreshToken(refreshToken);
+        if (!tokenJWT.equals(refreshJWT))
+            throw ApiException.err(401, "无效refreshToken！");
+        return Map.of("token", jwtUtils.makeAccessToken(tokenJWT));
+    }
 }

@@ -80,4 +80,7 @@ public class JwtUtils {
     public JwtPayload parserAccessToken(String token) {
         return parserToken(token, "auth", JwtPayload.class);
     }
+    public JwtPayload parserRefreshToken(String token) {
+        return parserToken(token, "refresh", JwtPayload.class);
+    }
 }

@@ -27,6 +27,7 @@ public class TokenFilter implements GlobalFilter,Ordered{
     };
     private final String[] nonPublicPrefix = {
         "/api/biz/test/welcome",
+        "/api/auth/refresh",
     };
     private boolean isPublic(String path) {
         for(var prefix: nonPublicPrefix) {
