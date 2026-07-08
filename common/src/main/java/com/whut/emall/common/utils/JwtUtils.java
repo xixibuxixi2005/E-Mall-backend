@@ -13,14 +13,21 @@ import org.springframework.stereotype.Component;
 import io.jsonwebtoken.SignatureAlgorithm;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.whut.emall.common.entity.ApiException;
 import com.whut.emall.common.entity.JwtPayload;
 
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.MalformedJwtException;
+import io.jsonwebtoken.UnsupportedJwtException;
+import io.jsonwebtoken.security.SignatureException;
 
 @Component
 public class JwtUtils {
     private final long EXPIRE = 2*60*60*1000;
+    private final long REFRESH_EXPIRE = 24*60*60*1000;
     private final ObjectMapper objectMapper = new ObjectMapper();
     
     private SecretKey secretKey;
@@ -30,17 +37,47 @@ public class JwtUtils {
         secretKey = new SecretKeySpec(keyBytes, SignatureAlgorithm.HS256.getJcaName());
     }
 
-    public String makeToken(JwtPayload payload) throws Exception{
-        return Jwts.builder()
-                .signWith(secretKey)
-                .expiration(new Date(System.currentTimeMillis()+EXPIRE))
-                .subject(payload.getUsername())
-                .claim("auth", objectMapper.writeValueAsString(payload))
-                .compact();
+    public String makeToken(String key, Object value, long expireIn) {
+        try {
+            return Jwts.builder()
+                    .signWith(secretKey)
+                    .expiration(new Date(System.currentTimeMillis()+expireIn))
+                    .issuer("E-Mall")
+                    .claim(key, objectMapper.writeValueAsString(value))
+                    .compact();
+        } catch (Exception e) {
+            throw ApiException.err("makeToken失败: "+e.getLocalizedMessage());
+        }
     }
 
-    public JwtPayload verify(String token) throws Exception{
-        Claims claims = (Claims)Jwts.parser().verifyWith(secretKey).build().parse(token).getPayload();
-        return objectMapper.readValue(claims.get("auth", String.class), JwtPayload.class);
+    public String makeAccessToken(JwtPayload payload) {
+        return makeToken("auth", payload, EXPIRE);
+    }
+    public String makeRefreshToken(JwtPayload payload) {
+        return makeToken("refresh", payload, REFRESH_EXPIRE);
+    }
+
+    public <T> T parserToken(String token, String key, Class<T> cls) {
+        try {
+            Claims claims = (Claims)Jwts.parser().verifyWith(secretKey).build().parse(token).getPayload();
+            return objectMapper.readValue(claims.get(key, String.class), cls);
+        } catch (ExpiredJwtException e) {
+            throw ApiException.err(401, "token已过期");
+        } catch (SignatureException e) {
+            throw ApiException.err(401, "token签名无效");
+        } catch (MalformedJwtException e) {
+            throw ApiException.err(401, "token格式错误");
+        } catch (UnsupportedJwtException e) {
+            throw ApiException.err(401, "token类型不支持");
+        } catch (IllegalArgumentException e) {
+            throw ApiException.err(401, "token为空或不合法");
+        } catch (JwtException e) {
+            throw ApiException.err(401, "token验证失败: " + e.getMessage());
+        } catch (Exception e) {
+            throw ApiException.err("verify失败: "+e.getLocalizedMessage());
+        }
+    }
+    public JwtPayload parserAccessToken(String token) {
+        return parserToken(token, "auth", JwtPayload.class);
     }
 }

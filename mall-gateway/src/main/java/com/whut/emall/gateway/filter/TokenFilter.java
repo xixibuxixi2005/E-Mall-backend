@@ -54,7 +54,9 @@ public class TokenFilter implements GlobalFilter,Ordered{
 
         JwtPayload payload;
         try {
-            payload = jwtUtils.verify(token.substring(7));
+            payload = jwtUtils.parserAccessToken(token.substring(7));
+        } catch (ApiException e) {
+            throw e;
         } catch (Exception e) {
             logger.error(e.getLocalizedMessage(), e);
             throw ApiException.err(HttpStatus.UNAUTHORIZED.value(), "Authorization token验证失败");
@@ -62,7 +64,8 @@ public class TokenFilter implements GlobalFilter,Ordered{
 
         request = request.mutate()
                     .header("X-User-Id", ""+payload.getUserId())
-                    .header("X-Username", payload.getUsername())
+                    .header("X-Email", payload.getEmail())
+                    .header("X-Role", ""+payload.getRoleCode())
                     .build();
 
         exchange = exchange.mutate().request(request).build();
