@@ -9,6 +9,11 @@ import com.whut.emall.common.entity.ApiResult;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler{
+    @ExceptionHandler(ApiException.class)
+    public ApiResult handleApiException(ApiException err) {
+        return err.toResult();
+    }
+
     @ExceptionHandler(Exception.class)
     public ApiResult handleException(Exception err) {
         err.printStackTrace();
