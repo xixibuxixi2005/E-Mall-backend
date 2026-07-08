@@ -7,15 +7,14 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 
 @Data
-@TableName("member")
-public class Member {
+@TableName("sys_user")
+public class SysUser {
     Long id;
     String email;
     String password;
     String username;
     String phone;
-    Integer level;
-    Integer points;
+    String roleCode;
     Integer status;
     Timestamp createTime;
     Timestamp updateTime;
