@@ -2,14 +2,22 @@ package com.whut.emall.business.service;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Random;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.whut.emall.business.dto.LoginDTO;
+import com.whut.emall.business.dto.RegisterDTO;
 import com.whut.emall.business.entity.Member;
 import com.whut.emall.business.entity.SysUser;
-import com.whut.emall.business.mapper.MemberMapper;
 import com.whut.emall.business.mapper.SysUserMapper;
 import com.whut.emall.common.entity.ApiException;
 import com.whut.emall.common.entity.JwtPayload;
@@ -21,8 +29,67 @@ import jakarta.annotation.Resource;
 @Service
 public class AuthService {
     @Resource SysUserMapper sysUserMapper;
-    @Resource MemberMapper memberMapper;
     @Resource JwtUtils jwtUtils;
+    @Resource MemberService memberService;
+    @Resource JavaMailSender javaMailSender;
+
+    Random random = new Random();
+    ConcurrentHashMap<String,String> registerCodes = new ConcurrentHashMap<>();
+    ConcurrentHashMap<String,ScheduledFuture<?>> registerCodesTask = new ConcurrentHashMap<>();
+    ConcurrentHashMap<String,ScheduledFuture<?>> sendCodesTask = new ConcurrentHashMap<>();
+    ScheduledThreadPoolExecutor executor = new ScheduledThreadPoolExecutor(10);
+
+    public void register(RegisterDTO dto) {
+        String email = dto.getEmail();
+        if (memberService.getMemberByEmail(email)!=null)
+            throw ApiException.err(400, "该邮箱已注册");
+        if (!dto.getVerificationCode().equals(registerCodes.get(email)))
+            throw ApiException.err(401, "验证码错误");
+        Member member = new Member();
+        member.setEmail(email);
+        member.setPhone(dto.getPhone());
+        member.setPassword(PasswordUtils.encryptPassword(dto.getPassword()));
+        member.setUsername(dto.getUsername());
+        memberService.addMember(member);
+    }
+
+    @Value("${spring.mail.username}") String mailFrom;
+    public void sendCode(String email) {
+        if (memberService.getMemberByEmail(email)!=null)
+            throw ApiException.err(400, "该邮箱已注册");
+        if (sendCodesTask.containsKey(email))
+            throw ApiException.err(403, "验证码发送过于频繁");
+        String code = String.format("%06d", random.nextInt(1000000));
+        registerCodes.put(email, code);
+
+        if (registerCodesTask.containsKey(email)) {
+            registerCodesTask.get(email).cancel(false);
+        }
+        registerCodesTask.put(email,
+            executor.schedule(() -> {
+                registerCodes.remove(email);
+                registerCodesTask.remove(email);
+            }, 300L, TimeUnit.SECONDS)
+        );
+        sendCodesTask.put(email,
+            executor.schedule(() -> {
+                sendCodesTask.remove(email);
+            }, 60L, TimeUnit.SECONDS)
+        );
+        
+        System.out.println("验证码："+code);
+        MimeMessageHelper message = new MimeMessageHelper(javaMailSender.createMimeMessage());
+        try {
+            message.setFrom(mailFrom);
+            message.setTo(email);
+            message.setSubject("E-Mall 注册验证");
+            message.setText("你的验证码为：\n"+
+                "<h2>"+code+"</h2>", true);
+            javaMailSender.send(message.getMimeMessage());
+        } catch (Exception err) {
+            throw ApiException.err(err.getLocalizedMessage());
+        }
+    }
 
     public Map<String,Object> login(LoginDTO dto) {
         String email = dto.getEmail();
@@ -44,9 +111,7 @@ public class AuthService {
             result.put("userId", sysUser.getId());
             result.put("phone", sysUser.getPhone());
         } else {
-            LambdaQueryWrapper<Member> wrapper = new LambdaQueryWrapper<>();
-            wrapper.eq(Member::getEmail, email);
-            Member member = memberMapper.selectOne(wrapper);
+            Member member = memberService.getMemberByEmail(email);
             if (member == null || !PasswordUtils.verifyPassword(dto.getPassword(), member.getPassword()))
                 throw ApiException.err(401, "用户名或密码错误");
             if (member.getStatus() == 0)

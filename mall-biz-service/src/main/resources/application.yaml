@@ -12,6 +12,17 @@ spring:
     url: "jdbc:mysql://127.0.0.1:3306/emall"
     username: emall
     password: emmmmmmmmmeeeall
+  mail:
+    host: smtp.qq.com
+    port: 465
+    username: ${EMALL_MAIL_USERNAME}
+    password: ${EMALL_MAIL_PASSWORD}
+    protocol: smtp
+    properties:
+      mail.smtp:
+        auth: true
+        ssl.enable: true
+
 
 mybatis-plus:
   configuration:
