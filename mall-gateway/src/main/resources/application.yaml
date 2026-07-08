@@ -23,11 +23,3 @@ spring:
           - Path=/api/biz/**, /api/auth/**
         filters:
         - StripPrefix=1   # 除去 /api 前缀
-      
-      globalcors:
-        cors-configurations:
-          '[/**]':
-            allowed-origins: "*"  # TODO 后期改为前端url
-            allowed-methods: "*"
-            allowed-headers: "*"
-            # allow-credentials: true
