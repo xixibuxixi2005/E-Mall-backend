@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @RequestMapping("/auth")
 public class AuthController {
     @Resource AuthService authService;
+
     @PostMapping("login")
     public ApiResult login(@RequestBody LoginDTO dto) {
         return new ApiResult("登陆成功", authService.login(dto));
@@ -37,4 +38,8 @@ public class AuthController {
         return new ApiResult("刷新成功", authService.refresh(accessToken.substring(7), refreshToken));
     }
     
+    @PostMapping("logout")
+    public ApiResult logout(@RequestHeader("Authorization") String accessToken) {
+        return new ApiResult("退出成功");
+    }
 }
