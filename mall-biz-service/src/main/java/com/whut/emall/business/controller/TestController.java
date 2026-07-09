@@ -11,7 +11,9 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import com.whut.emall.business.entity.Member;
+import com.whut.emall.business.entity.Product;
 import com.whut.emall.business.mapper.MemberMapper;
+import com.whut.emall.business.mapper.ProductMapper;
 
 import java.util.List;
 
@@ -20,6 +22,7 @@ import java.util.List;
 public class TestController {
     @Value("${server.port}") String port;
     @Resource MemberMapper memberMapper;
+    @Resource ProductMapper productMapper;
     @GetMapping
     public String test(@RequestParam(defaultValue = "") String str) {
         return "[port "+port+"] You said" + str;
@@ -31,5 +34,9 @@ public class TestController {
     @GetMapping("/all_members")
     public List<Member> allMembers(){
         return memberMapper.selectList(null);
+    }
+    @GetMapping("/all_products")
+    public List<Product> allProducts(){
+        return productMapper.selectList(null);
     }
 }

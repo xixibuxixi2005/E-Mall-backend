@@ -6,5 +6,4 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.whut.emall.business.entity.Member;
 
 @Mapper
-public interface MemberMapper extends BaseMapper<Member>{
-}
+public interface MemberMapper extends BaseMapper<Member>{ }
