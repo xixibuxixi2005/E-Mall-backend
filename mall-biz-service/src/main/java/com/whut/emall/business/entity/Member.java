@@ -11,7 +11,7 @@ import lombok.Data;
 @Data
 @TableName("member")
 public class Member {
-    Long id;
+    Integer id;
     String email;
     String password;
     String username;

@@ -16,7 +16,7 @@ public class ProductController {
     @Resource ProductService productService;
 
     @GetMapping("{id}")
-    public ApiResult getProductDetail(@PathVariable Long id) {
+    public ApiResult getProductDetail(@PathVariable Integer id) {
         return ApiResult.ok("操作成功", productService.getProductById(id));
     }
 }

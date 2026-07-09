@@ -12,7 +12,7 @@ import jakarta.annotation.Resource;
 public class MemberService {
     @Resource MemberMapper memberMapper;
 
-    public Member getMemberById(Long id) {
+    public Member getMemberById(Integer id) {
         return memberMapper.selectById(id);
     }
     

@@ -10,10 +10,10 @@ import lombok.Data;
 
 @Data
 public class ProductDetailVO {
-    Long id;
+    Integer id;
     String name;
     String subTitle;
-    Long categoryId;
+    Integer categoryId;
     String categoryName;
     BigDecimal price;
     BigDecimal originalPrice;

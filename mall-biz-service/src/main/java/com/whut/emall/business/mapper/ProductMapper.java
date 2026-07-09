@@ -1,7 +1,6 @@
 package com.whut.emall.business.mapper;
 
 import org.apache.ibatis.annotations.Mapper;
-import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Result;
 import org.apache.ibatis.annotations.Results;
 import org.apache.ibatis.annotations.Select;
@@ -23,5 +22,5 @@ public interface ProductMapper extends BaseMapper<Product> {
         LEFT JOIN category c ON p.category_id = c.id
         WHERE p.id = #{id}
         """)
-    ProductDetailVO getProductDetailById(@Param("id") Long id);
+    ProductDetailVO getProductDetailById(Integer id);
 }

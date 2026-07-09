@@ -11,7 +11,7 @@ import com.whut.emall.common.entity.ApiException;
 public class ProductService {
     @Resource ProductMapper productMapper;
 
-    public ProductDetailVO getProductById(Long id) {
+    public ProductDetailVO getProductById(Integer id) {
         ProductDetailVO vo = productMapper.getProductDetailById(id);
         if (vo == null) {
             throw ApiException.err(404, "商品不存在");

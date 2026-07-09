@@ -14,10 +14,10 @@ import lombok.Data;
 @Data
 @TableName(value = "product", autoResultMap = true)
 public class Product {
-    Long id;
+    Integer id;
     String name;
     String subTitle;
-    Long categoryId;
+    Integer categoryId;
     BigDecimal price;
     BigDecimal originalPrice;
     Integer stock;
