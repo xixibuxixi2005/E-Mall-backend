@@ -1,14 +1,17 @@
 package com.whut.emall.business.controller;
 
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.whut.emall.business.dto.LoginDTO;
 import com.whut.emall.business.dto.RegisterDTO;
 import com.whut.emall.business.service.AuthService;
 import com.whut.emall.common.entity.ApiException;
 import com.whut.emall.common.entity.ApiResult;
 
 import jakarta.annotation.Resource;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import lombok.Data;
 
 import java.util.Map;
 
@@ -24,7 +27,7 @@ public class AuthController {
     @Resource AuthService authService;
 
     @PostMapping("register")
-    public String register(@RequestBody RegisterDTO dto) {
+    public String register(@RequestBody @Validated RegisterDTO dto) {
         authService.register(dto);
         return "注册成功";
     }
@@ -39,8 +42,8 @@ public class AuthController {
     
 
     @PostMapping("login")
-    public ApiResult login(@RequestBody LoginDTO dto) {
-        return new ApiResult("登陆成功", authService.login(dto));
+    public ApiResult login(@RequestBody @Validated LoginDTO dto) {
+        return new ApiResult("登陆成功", authService.login(dto.getEmail(), dto.getPassword()));
     }
     
     @PostMapping("refresh")
@@ -58,5 +61,11 @@ public class AuthController {
     public ApiResult logout(@RequestHeader("Authorization") String accessToken) {
         // TODO 添加黑名单功能
         return new ApiResult("退出成功");
+    }
+
+    @Data
+    static class LoginDTO {
+        @NotBlank(message = "email不能为空") String email;
+        @NotNull(message = "password不能为空") String password;
     }
 }

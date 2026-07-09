@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.whut.emall.business.entity.Member;
 import com.whut.emall.business.mapper.MemberMapper;
+import com.whut.emall.business.vo.MemberInfo;
 
 import jakarta.annotation.Resource;
 
@@ -12,8 +13,12 @@ import jakarta.annotation.Resource;
 public class MemberService {
     @Resource MemberMapper memberMapper;
 
-    public Member getMemberById(Long id) {
+    public Member getMemberById(Integer id) {
         return memberMapper.selectById(id);
+    }
+
+    public MemberInfo getInfoById(Integer id) {
+        return memberMapper.selectInfoById(id);
     }
     
     public Member getMemberByEmail(String email) {

@@ -1,13 +1,14 @@
 package com.whut.emall.business.dto;
 
-import io.micrometer.common.lang.NonNull;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 @Data
 public class RegisterDTO {
-    @NonNull String email;
-    @NonNull String password;
-    @NonNull String verificationCode;
+    @NotBlank(message = "email不能为空") String email;
+    @NotNull(message = "password不能为空") String password;
+    @NotBlank(message = "verificationCode不能为空") String verificationCode;
     
     String username;
     String phone;

@@ -12,12 +12,12 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
-
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.whut.emall.business.dto.LoginDTO;
+
 import com.whut.emall.business.dto.RegisterDTO;
 import com.whut.emall.business.entity.Member;
 import com.whut.emall.business.entity.SysUser;
+import com.whut.emall.business.entity.enums.UserStatus;
 import com.whut.emall.business.mapper.SysUserMapper;
 import com.whut.emall.common.entity.ApiException;
 import com.whut.emall.common.entity.JwtPayload;
@@ -58,7 +58,7 @@ public class AuthService {
         if (memberService.getMemberByEmail(email)!=null)
             throw ApiException.err(400, "该邮箱已注册");
         if (sendCodesTask.containsKey(email))
-            throw ApiException.err(403, "验证码发送过于频繁");
+            throw ApiException.err(429, "发送过于频繁，请稍后再试");
         String code = String.format("%06d", random.nextInt(1000000));
         registerCodes.put(email, code);
 
@@ -91,15 +91,14 @@ public class AuthService {
         }
     }
 
-    public Map<String,Object> login(LoginDTO dto) {
-        String email = dto.getEmail();
+    public Map<String,Object> login(String email, String password) {
         Map<String,Object> result = new HashMap<>();
 
         LambdaQueryWrapper<SysUser> wrapperS = new LambdaQueryWrapper<>();
         wrapperS.eq(SysUser::getEmail, email);
         SysUser sysUser = sysUserMapper.selectOne(wrapperS);
         if (sysUser != null) {
-            if(!PasswordUtils.verifyPassword(dto.getPassword(), sysUser.getPassword()))
+            if(!PasswordUtils.verifyPassword(password, sysUser.getPassword()))
                 throw ApiException.err(401, "用户名或密码错误");
             if (sysUser.getStatus() == 0)
                 throw ApiException.err(403, "账号已被禁用");
@@ -112,9 +111,9 @@ public class AuthService {
             result.put("phone", sysUser.getPhone());
         } else {
             Member member = memberService.getMemberByEmail(email);
-            if (member == null || !PasswordUtils.verifyPassword(dto.getPassword(), member.getPassword()))
+            if (member == null || !PasswordUtils.verifyPassword(password, member.getPassword()))
                 throw ApiException.err(401, "用户名或密码错误");
-            if (member.getStatus() == 0)
+            if (member.getStatus() == UserStatus.INVALID)
                 throw ApiException.err(403, "账号已被禁用");
             JwtPayload payload = new JwtPayload(member.getId(), member.getEmail(), "MEMBER");
             result.put("token", jwtUtils.makeAccessToken(payload));

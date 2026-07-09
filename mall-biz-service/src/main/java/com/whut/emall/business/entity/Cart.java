@@ -7,15 +7,12 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 
 @Data
-@TableName("sys_user")
-public class SysUser {
+@TableName("cart")
+public class Cart {
     Integer id;
-    String email;
-    String password;
-    String username;
-    String phone;
-    String roleCode;
-    Integer status;
+    Integer userId;
+    Integer productId;
+    Integer quantity;
+    Boolean selected;
     Timestamp createTime;
-    Timestamp updateTime;
 }
