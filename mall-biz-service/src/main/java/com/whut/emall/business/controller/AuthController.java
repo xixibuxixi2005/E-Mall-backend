@@ -1,5 +1,6 @@
 package com.whut.emall.business.controller;
 
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.whut.emall.business.dto.LoginDTO;
@@ -24,7 +25,7 @@ public class AuthController {
     @Resource AuthService authService;
 
     @PostMapping("register")
-    public String register(@RequestBody RegisterDTO dto) {
+    public String register(@RequestBody @Validated RegisterDTO dto) {
         authService.register(dto);
         return "注册成功";
     }
@@ -39,7 +40,7 @@ public class AuthController {
     
 
     @PostMapping("login")
-    public ApiResult login(@RequestBody LoginDTO dto) {
+    public ApiResult login(@RequestBody @Validated LoginDTO dto) {
         return new ApiResult("登陆成功", authService.login(dto));
     }
     
