@@ -9,9 +9,9 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public enum MemberLevel {
-    NORMAL(1, "普通"),
-    SIVLER(2, "白银"),
-    GOLD(3, "黄金");
+    NORMAL(1, "普通会员"),
+    SIVLER(2, "白银会员"),
+    GOLD(3, "黄金会员");
 
     @EnumValue final Integer value;
     @JsonValue final String desc;

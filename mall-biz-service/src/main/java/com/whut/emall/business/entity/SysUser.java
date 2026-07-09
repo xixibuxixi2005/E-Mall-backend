@@ -9,7 +9,7 @@ import lombok.Data;
 @Data
 @TableName("sys_user")
 public class SysUser {
-    Long id;
+    Integer id;
     String email;
     String password;
     String username;
