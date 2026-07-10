@@ -12,13 +12,11 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 
 import com.whut.emall.business.dto.RegisterDTO;
 import com.whut.emall.business.entity.Member;
 import com.whut.emall.business.entity.SysUser;
 import com.whut.emall.business.entity.enums.UserStatus;
-import com.whut.emall.business.mapper.SysUserMapper;
 import com.whut.emall.common.entity.ApiException;
 import com.whut.emall.common.entity.JwtPayload;
 import com.whut.emall.common.utils.JwtUtils;
@@ -28,9 +26,9 @@ import jakarta.annotation.Resource;
 
 @Service
 public class AuthService {
-    @Resource SysUserMapper sysUserMapper;
     @Resource JwtUtils jwtUtils;
     @Resource MemberService memberService;
+    @Resource SysUserService sysUserService;
     @Resource JavaMailSender javaMailSender;
 
     Random random = new Random();
@@ -94,13 +92,11 @@ public class AuthService {
     public Map<String,Object> login(String email, String password) {
         Map<String,Object> result = new HashMap<>();
 
-        LambdaQueryWrapper<SysUser> wrapperS = new LambdaQueryWrapper<>();
-        wrapperS.eq(SysUser::getEmail, email);
-        SysUser sysUser = sysUserMapper.selectOne(wrapperS);
+        SysUser sysUser = sysUserService.getSysUserByEmail(email);
         if (sysUser != null) {
             if(!PasswordUtils.verifyPassword(password, sysUser.getPassword()))
                 throw ApiException.err(401, "用户名或密码错误");
-            if (sysUser.getStatus() == 0)
+            if (sysUser.getStatus() == UserStatus.INVALID)
                 throw ApiException.err(403, "账号已被禁用");
             JwtPayload payload = new JwtPayload(sysUser.getId(), sysUser.getEmail(), sysUser.getRoleCode());
             result.put("token", jwtUtils.makeAccessToken(payload));

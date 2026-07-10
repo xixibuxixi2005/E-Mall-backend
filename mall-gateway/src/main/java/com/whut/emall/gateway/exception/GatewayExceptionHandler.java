@@ -43,7 +43,7 @@ public class GatewayExceptionHandler implements ErrorWebExceptionHandler, Ordere
 
         if (ex instanceof ApiException apiException) {
             result = apiException.toResult();
-            statusCode = HttpStatus.OK;
+            statusCode = HttpStatus.valueOf(result.getCode());
         } else if (ex instanceof ResponseStatusException responseStatusException) {
             statusCode = responseStatusException.getStatusCode();
             result = new ApiResult(statusCode.value(), responseStatusException.getReason() == null ? statusCode.toString() : responseStatusException.getReason(), null);

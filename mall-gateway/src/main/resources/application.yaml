@@ -20,6 +20,6 @@ spring:
       - id: mall-biz-service
         uri: lb://mall-biz-service
         predicates:
-          - Path=/api/biz/**, /api/auth/**
+          - Path=/api/biz/**, /api/auth/**, /api/admin/**
         filters:
         - StripPrefix=1   # 除去 /api 前缀
