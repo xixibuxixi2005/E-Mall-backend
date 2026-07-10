@@ -8,8 +8,10 @@ import com.whut.emall.common.entity.ApiResult;
 
 import jakarta.annotation.Resource;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
+import org.hibernate.validator.constraints.Length;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -31,10 +33,25 @@ public class MemberController {
         return ApiResult.ok("修改成功");
     }
 
+    @PutMapping("password")
+    public ApiResult setPassword(@RequestHeader("X-User-Id") Integer userId, @RequestBody @Valid PasswordDTO dto) {
+        memberService.setPassword(userId, dto.getOldPassword(), dto.getNewPassword());
+        return ApiResult.ok("密码修改成功");
+    }
+
     @Data
     static class UserInfoDTO {
         String email;
         String phone;
         String avatar;
+    }
+    
+    @Data
+    static class PasswordDTO {
+        @NotNull(message = "oldPassword不可为空")
+        String oldPassword;
+        @NotNull(message = "newPassword不可为空")
+        @Length(min = 6, max = 20, message = "密码长度需为6-20位")
+        String newPassword;
     }
 }

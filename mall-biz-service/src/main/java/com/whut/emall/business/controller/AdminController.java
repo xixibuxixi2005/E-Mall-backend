@@ -1,5 +1,6 @@
 package com.whut.emall.business.controller;
 
+import org.hibernate.validator.constraints.Length;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -54,7 +55,9 @@ public class AdminController {
     @Data
     static class UserCreateDTO {
         @NotBlank(message = "username不可为空") String username;
-        @NotNull(message = "password不可为空") String password;
+        @NotNull(message = "password不可为空")
+        @Length(min = 6, max = 20, message = "密码长度需为6-20位")
+        String password;
         String phone;
         @NotBlank(message = "email不可为空") String email;
         String roleCode;

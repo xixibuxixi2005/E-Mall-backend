@@ -7,6 +7,7 @@ import com.whut.emall.business.entity.Member;
 import com.whut.emall.business.mapper.MemberMapper;
 import com.whut.emall.business.vo.MemberInfo;
 import com.whut.emall.common.entity.ApiException;
+import com.whut.emall.common.utils.PasswordUtils;
 
 import jakarta.annotation.Resource;
 
@@ -42,6 +43,16 @@ public class MemberService {
         member.setEmail(email);
         member.setPhone(phone);
         // TODO: member.setAvatar(avatar);
+        memberMapper.updateById(member);
+    }
+    
+    public void setPassword(int userId, String oldPassword, String newPassword) {
+        Member member = getMemberById(userId);
+        if (member == null)
+            throw ApiException.err(404, "该用户不存在");
+        if(!PasswordUtils.verifyPassword(oldPassword, member.getPassword()))
+            throw ApiException.err(403, "旧密码错误");
+        member.setPassword(PasswordUtils.encryptPassword(newPassword));
         memberMapper.updateById(member);
     }
 }
