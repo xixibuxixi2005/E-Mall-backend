@@ -1,8 +1,10 @@
 package com.whut.emall.business.controller;
 
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.whut.emall.business.service.AdminService;
@@ -26,6 +28,16 @@ public class AdminController {
             throw ApiException.err(400, "前端仅能新建客服(roleCode=CS)");
         var result = adminService.userCreate(dto.getEmail(), dto.getPassword(), dto.getUsername(), dto.getPhone(), dto.getRoleCode());
         return ApiResult.ok("添加成功", result);
+    }
+
+    @GetMapping("/user/list")
+    public ApiResult userList(
+        @RequestParam(required = false, defaultValue = "1") Integer pageNum,
+        @RequestParam(required = false, defaultValue = "10") Integer pageSize,
+        @RequestParam(required = false) String username,
+        @RequestParam(required = false) String roleCode
+    ) {
+        return ApiResult.ok("操作成功",  adminService.userList(pageNum, pageSize, username, roleCode));
     }
 
     @Data

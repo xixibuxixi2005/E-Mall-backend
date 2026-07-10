@@ -3,6 +3,7 @@ package com.whut.emall.business.service;
 import org.springframework.stereotype.Service;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.whut.emall.business.entity.SysUser;
 import com.whut.emall.business.mapper.SysUserMapper;
 import com.whut.emall.business.vo.SysUserInfo;
@@ -10,7 +11,7 @@ import com.whut.emall.business.vo.SysUserInfo;
 import jakarta.annotation.Resource;
 
 @Service
-public class SysUserService {
+public class SysUserService extends ServiceImpl<SysUserMapper, SysUser> {
     @Resource SysUserMapper sysUserMapper;
 
     public SysUserInfo getInfoByEmail(String email) {
