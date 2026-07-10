@@ -51,4 +51,12 @@ public class AdminService {
         }).toList());
         return new SysUserListVO(voPage);
     }
+
+    public void setUserStatus(Integer userId, UserStatus status) {
+        SysUser sysUser = sysUserService.getById(userId);
+        if (sysUser==null)
+            throw ApiException.err(404, "该用户不存在");
+        sysUser.setStatus(status);
+        sysUserService.updateById(sysUser);
+    }
 }
