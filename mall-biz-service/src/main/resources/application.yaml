@@ -1,5 +1,7 @@
 server:
   port: 11000
+  servlet:
+    context-path: /api
 
 spring:
   application:
@@ -30,3 +32,8 @@ mybatis-plus:
   global-config:
     db-config:
       id-type: none
+
+springdoc:
+  api-docs:
+    enabled: true
+    path: /biz/v3/api-docs

@@ -21,41 +21,68 @@ import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
+
+@Tag(name = "购物车接口", description = "购物车增删改查与选择状态管理")
 @RestController
 @RequestMapping("/biz/cart")
 public class CartController {
     @Resource CartService cartService;
 
+    @Operation(summary = "加入购物车", description = "向当前用户购物车中添加商品")
+    @ApiResponse(responseCode = "200", description = "添加成功", content = @Content(schema = @Schema(implementation = ApiResult.class)))
+    @SecurityRequirement(name = "bearerAuth")
     @PostMapping("/add")
-    public ApiResult add(@RequestHeader("X-User-Id") Integer userId, @RequestBody @Valid CartAddDTO dto) {
+    public ApiResult add(@Parameter(hidden = true) @RequestHeader("X-User-Id") Integer userId, @RequestBody @Valid CartAddDTO dto) {
         return ApiResult.ok("添加成功", cartService.add(userId, dto.getProductId(), dto.getQuantity()));
     }
 
+    @Operation(summary = "购物车列表", description = "获取当前用户购物车明细")
+    @ApiResponse(responseCode = "200", description = "查询成功", content = @Content(schema = @Schema(implementation = ApiResult.class)))
+    @SecurityRequirement(name = "bearerAuth")
     @GetMapping("/list")
-    public ApiResult list(@RequestHeader("X-User-Id") Integer userId) {
+    public ApiResult list(@Parameter(hidden = true) @RequestHeader("X-User-Id") Integer userId) {
         return ApiResult.ok("操作成功", cartService.list(userId));
     }
 
+    @Operation(summary = "更新购物车商品数量", description = "修改购物车条目的购买数量")
+    @ApiResponse(responseCode = "200", description = "更新成功", content = @Content(schema = @Schema(implementation = ApiResult.class)))
+    @SecurityRequirement(name = "bearerAuth")
     @PutMapping("/update")
-    public ApiResult update(@RequestHeader("X-User-Id") Integer userId, @RequestBody @Valid CartUpdateDTO dto) {
+    public ApiResult update(@Parameter(hidden = true) @RequestHeader("X-User-Id") Integer userId, @RequestBody @Valid CartUpdateDTO dto) {
         cartService.update(userId, dto.getCartId(), dto.getQuantity());
         return ApiResult.ok("更新成功");
     }
 
+    @Operation(summary = "删除购物车条目", description = "批量删除购物车记录")
+    @ApiResponse(responseCode = "200", description = "删除成功", content = @Content(schema = @Schema(implementation = ApiResult.class)))
+    @SecurityRequirement(name = "bearerAuth")
     @DeleteMapping("/remove")
-    public ApiResult remove(@RequestHeader("X-User-Id") Integer userId, @RequestBody @Valid CartRemoveDTO dto) {
+    public ApiResult remove(@Parameter(hidden = true) @RequestHeader("X-User-Id") Integer userId, @RequestBody @Valid CartRemoveDTO dto) {
         cartService.remove(userId, dto.getCartIds());
         return ApiResult.ok("删除成功");
     }
 
+    @Operation(summary = "清空购物车", description = "删除当前用户的全部购物车记录")
+    @ApiResponse(responseCode = "200", description = "清空成功", content = @Content(schema = @Schema(implementation = ApiResult.class)))
+    @SecurityRequirement(name = "bearerAuth")
     @DeleteMapping("/clear")
-    public ApiResult clear(@RequestHeader("X-User-Id") Integer userId) {
+    public ApiResult clear(@Parameter(hidden = true) @RequestHeader("X-User-Id") Integer userId) {
         cartService.clear(userId);
         return ApiResult.ok("已清空购物车");
     }
 
+    @Operation(summary = "设置勾选状态", description = "修改购物车条目的选中状态")
+    @ApiResponse(responseCode = "200", description = "更新成功", content = @Content(schema = @Schema(implementation = ApiResult.class)))
+    @SecurityRequirement(name = "bearerAuth")
     @PutMapping("/select")
-    public ApiResult select(@RequestHeader("X-User-Id") Integer userId, @RequestBody @Valid CartSelectDTO dto) {
+    public ApiResult select(@Parameter(hidden = true) @RequestHeader("X-User-Id") Integer userId, @RequestBody @Valid CartSelectDTO dto) {
         cartService.select(userId, dto.getCartId(), dto.getSelected());
         return ApiResult.ok("更新成功");
     }

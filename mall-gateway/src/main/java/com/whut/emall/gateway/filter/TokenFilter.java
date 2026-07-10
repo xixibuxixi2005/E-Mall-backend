@@ -24,6 +24,7 @@ public class TokenFilter implements GlobalFilter,Ordered{
     private final String[] publicPrefix = {
         "/api/biz/test",
         "/api/auth",
+        "/api/biz/v3/api-docs",
     };
     private final String[] nonPublicPrefix = {
         "/api/biz/test/welcome",
@@ -42,7 +43,6 @@ public class TokenFilter implements GlobalFilter,Ordered{
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
         var request = exchange.getRequest();
-        var response = exchange.getResponse();
         String path = request.getURI().getPath();
         
         if (isPublic(path))
