@@ -21,4 +21,5 @@ public class Member {
     UserStatus status;
     Timestamp createTime;
     Timestamp updateTime;
+    // TODO: 添加avatar字段
 }

@@ -48,7 +48,7 @@ public class AdminController {
         if (dto.getUserId() == selfId)
             throw ApiException.err(400, "不允许对当前用户进行该操作");
         adminService.setUserStatus(dto.getUserId(), dto.getStatus());
-        return ApiResult.ok("操作成功");
+        return ApiResult.ok("更新成功");
     }
 
     @Data

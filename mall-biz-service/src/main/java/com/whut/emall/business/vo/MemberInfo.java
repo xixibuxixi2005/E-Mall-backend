@@ -15,4 +15,5 @@ public class MemberInfo {
     MemberLevel level;
     Integer points;
     Timestamp createTime;
+    // TODO: 添加avatar字段
 }
