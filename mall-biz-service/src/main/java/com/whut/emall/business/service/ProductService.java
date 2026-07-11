@@ -54,4 +54,33 @@ public class ProductService {
         }
         return vo;
     }
+
+    public void updateProduct(Integer id, String name, String subTitle, BigDecimal price, Integer stock, String description) {
+        Product product = productMapper.selectById(id);
+        if (product == null)
+            throw ApiException.err(404, "商品不存在");
+        product.setId(id);
+        product.setName(name);
+        product.setSubTitle(subTitle);
+        product.setPrice(price);
+        product.setStock(stock);
+        product.setDescription(description);
+        productMapper.updateById(product);
+    }
+
+    public void deleteProduct(Integer id) {
+        if (productMapper.selectById(id) == null)
+            throw ApiException.err(404, "商品不存在");
+        
+        productMapper.deleteById(id);
+    }
+
+    public void updateProductStatus(Integer id, ProductStatus status) {
+        Product product = productMapper.selectById(id);
+        if (product == null)
+            throw ApiException.err(404, "商品不存在");
+        product.setId(id);
+        product.setStatus(status);
+        productMapper.updateById(product);
+    }
 }

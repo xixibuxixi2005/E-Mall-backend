@@ -8,7 +8,7 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-public enum MemberLevel {
+public enum MemberLevel implements IEmallEnum{
     NORMAL(1, "普通会员"),
     SIVLER(2, "白银会员"),
     GOLD(3, "黄金会员");

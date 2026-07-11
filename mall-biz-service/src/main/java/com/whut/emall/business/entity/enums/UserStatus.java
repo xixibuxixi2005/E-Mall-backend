@@ -8,7 +8,7 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-public enum UserStatus{
+public enum UserStatus implements IEmallEnum{
     VALID(1, "有效"),
     INVALID(0, "禁用");
 
