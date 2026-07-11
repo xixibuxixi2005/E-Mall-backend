@@ -18,8 +18,6 @@ import lombok.Data;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -31,7 +29,7 @@ public class MemberController {
     @Resource MemberService memberService;
 
     @Operation(summary = "获取会员信息", description = "根据网关注入的 X-User-Id 获取当前会员信息")
-    @ApiResponse(responseCode = "200", description = "查询成功", content = @Content(schema = @Schema(implementation = ApiResult.class)))
+    @ApiResponse(responseCode = "200", description = "查询成功")
     @SecurityRequirement(name = "bearerAuth")
     @GetMapping("info")
     public ApiResult getInfo(@Parameter(hidden = true) @RequestHeader("X-User-Id") Integer userId) {
@@ -39,7 +37,7 @@ public class MemberController {
     }
     
     @Operation(summary = "修改会员信息", description = "更新当前会员的邮箱、手机号和头像")
-    @ApiResponse(responseCode = "200", description = "修改成功", content = @Content(schema = @Schema(implementation = ApiResult.class)))
+    @ApiResponse(responseCode = "200", description = "修改成功")
     @SecurityRequirement(name = "bearerAuth")
     @PutMapping("info")
     public ApiResult setInfo(@Parameter(hidden = true) @RequestHeader("X-User-Id") Integer userId, @RequestBody @Valid UserInfoDTO dto) {
@@ -48,7 +46,7 @@ public class MemberController {
     }
 
     @Operation(summary = "修改密码", description = "使用旧密码修改当前会员密码")
-    @ApiResponse(responseCode = "200", description = "修改成功", content = @Content(schema = @Schema(implementation = ApiResult.class)))
+    @ApiResponse(responseCode = "200", description = "修改成功")
     @SecurityRequirement(name = "bearerAuth")
     @PutMapping("password")
     public ApiResult setPassword(@Parameter(hidden = true) @RequestHeader("X-User-Id") Integer userId, @RequestBody @Valid PasswordDTO dto) {

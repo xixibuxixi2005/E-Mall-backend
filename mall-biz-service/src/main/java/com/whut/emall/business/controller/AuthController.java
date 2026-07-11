@@ -21,8 +21,6 @@ import lombok.Data;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -59,7 +57,7 @@ public class AuthController {
     }
 
     @Operation(summary = "刷新 token", description = "使用 refreshToken 刷新 accessToken")
-    @ApiResponse(responseCode = "200", description = "刷新成功", content = @Content(schema = @Schema(implementation = ApiResult.class)))
+    @ApiResponse(responseCode = "200", description = "刷新成功")
     @SecurityRequirement(name = "bearerAuth")
     @PostMapping("refresh")
     public ApiResult refresh(
@@ -72,7 +70,7 @@ public class AuthController {
     }
 
     @Operation(summary = "退出登录", description = "当前返回成功，后续可扩展黑名单机制")
-    @ApiResponse(responseCode = "200", description = "退出成功", content = @Content(schema = @Schema(implementation = ApiResult.class)))
+    @ApiResponse(responseCode = "200", description = "退出成功")
     @SecurityRequirement(name = "bearerAuth")
     @PostMapping("logout")
     public ApiResult logout(@Parameter(hidden = true) @RequestHeader("Authorization") String accessToken) {

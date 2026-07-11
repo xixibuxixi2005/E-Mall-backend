@@ -23,8 +23,6 @@ import lombok.Data;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -36,7 +34,7 @@ public class CartController {
     @Resource CartService cartService;
 
     @Operation(summary = "加入购物车", description = "向当前用户购物车中添加商品")
-    @ApiResponse(responseCode = "200", description = "添加成功", content = @Content(schema = @Schema(implementation = ApiResult.class)))
+    @ApiResponse(responseCode = "200", description = "添加成功")
     @SecurityRequirement(name = "bearerAuth")
     @PostMapping("/add")
     public ApiResult add(@Parameter(hidden = true) @RequestHeader("X-User-Id") Integer userId, @RequestBody @Valid CartAddDTO dto) {
@@ -44,7 +42,7 @@ public class CartController {
     }
 
     @Operation(summary = "购物车列表", description = "获取当前用户购物车明细")
-    @ApiResponse(responseCode = "200", description = "查询成功", content = @Content(schema = @Schema(implementation = ApiResult.class)))
+    @ApiResponse(responseCode = "200", description = "查询成功")
     @SecurityRequirement(name = "bearerAuth")
     @GetMapping("/list")
     public ApiResult list(@Parameter(hidden = true) @RequestHeader("X-User-Id") Integer userId) {
@@ -52,7 +50,7 @@ public class CartController {
     }
 
     @Operation(summary = "更新购物车商品数量", description = "修改购物车条目的购买数量")
-    @ApiResponse(responseCode = "200", description = "更新成功", content = @Content(schema = @Schema(implementation = ApiResult.class)))
+    @ApiResponse(responseCode = "200", description = "更新成功")
     @SecurityRequirement(name = "bearerAuth")
     @PutMapping("/update")
     public ApiResult update(@Parameter(hidden = true) @RequestHeader("X-User-Id") Integer userId, @RequestBody @Valid CartUpdateDTO dto) {
@@ -61,7 +59,7 @@ public class CartController {
     }
 
     @Operation(summary = "删除购物车条目", description = "批量删除购物车记录")
-    @ApiResponse(responseCode = "200", description = "删除成功", content = @Content(schema = @Schema(implementation = ApiResult.class)))
+    @ApiResponse(responseCode = "200", description = "删除成功")
     @SecurityRequirement(name = "bearerAuth")
     @DeleteMapping("/remove")
     public ApiResult remove(@Parameter(hidden = true) @RequestHeader("X-User-Id") Integer userId, @RequestBody @Valid CartRemoveDTO dto) {
@@ -70,7 +68,7 @@ public class CartController {
     }
 
     @Operation(summary = "清空购物车", description = "删除当前用户的全部购物车记录")
-    @ApiResponse(responseCode = "200", description = "清空成功", content = @Content(schema = @Schema(implementation = ApiResult.class)))
+    @ApiResponse(responseCode = "200", description = "清空成功")
     @SecurityRequirement(name = "bearerAuth")
     @DeleteMapping("/clear")
     public ApiResult clear(@Parameter(hidden = true) @RequestHeader("X-User-Id") Integer userId) {
@@ -79,7 +77,7 @@ public class CartController {
     }
 
     @Operation(summary = "设置勾选状态", description = "修改购物车条目的选中状态")
-    @ApiResponse(responseCode = "200", description = "更新成功", content = @Content(schema = @Schema(implementation = ApiResult.class)))
+    @ApiResponse(responseCode = "200", description = "更新成功")
     @SecurityRequirement(name = "bearerAuth")
     @PutMapping("/select")
     public ApiResult select(@Parameter(hidden = true) @RequestHeader("X-User-Id") Integer userId, @RequestBody @Valid CartSelectDTO dto) {
