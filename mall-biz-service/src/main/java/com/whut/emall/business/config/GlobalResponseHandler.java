@@ -28,7 +28,7 @@ public class GlobalResponseHandler implements ResponseBodyAdvice<Object>{
     public Object beforeBodyWrite(Object body, MethodParameter returnType, MediaType selectedContentType,
             Class<? extends HttpMessageConverter<?>> selectedConverterType, ServerHttpRequest request, ServerHttpResponse response) {
         if (body instanceof ApiResult) {
-            ApiResult result = (ApiResult) body;
+            ApiResult<?> result = (ApiResult<?>) body;
             response.setStatusCode(HttpStatusCode.valueOf(result.getCode()));
             return body;
         }

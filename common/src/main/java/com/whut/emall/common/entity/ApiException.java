@@ -28,7 +28,7 @@ public class ApiException extends RuntimeException {
         return new ApiException(code, message, data);
     }
 
-    public ApiResult toResult() {
-        return new ApiResult(code, msg, data);
+    public ApiResult<?> toResult() {
+        return new ApiResult<>(code, msg, data);
     }
 }

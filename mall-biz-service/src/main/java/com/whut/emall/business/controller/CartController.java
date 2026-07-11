@@ -12,6 +12,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.whut.emall.business.service.CartService;
+import com.whut.emall.business.vo.CartDetailVO;
+import com.whut.emall.business.vo.CartListVO;
 import com.whut.emall.common.entity.ApiResult;
 
 import jakarta.annotation.Resource;
@@ -37,7 +39,7 @@ public class CartController {
     @ApiResponse(responseCode = "200", description = "添加成功")
     @SecurityRequirement(name = "bearerAuth")
     @PostMapping("/add")
-    public ApiResult add(@Parameter(hidden = true) @RequestHeader("X-User-Id") Integer userId, @RequestBody @Valid CartAddDTO dto) {
+    public ApiResult<CartDetailVO> add(@Parameter(hidden = true) @RequestHeader("X-User-Id") Integer userId, @RequestBody @Valid CartAddDTO dto) {
         return ApiResult.ok("添加成功", cartService.add(userId, dto.getProductId(), dto.getQuantity()));
     }
 
@@ -45,7 +47,7 @@ public class CartController {
     @ApiResponse(responseCode = "200", description = "查询成功")
     @SecurityRequirement(name = "bearerAuth")
     @GetMapping("/list")
-    public ApiResult list(@Parameter(hidden = true) @RequestHeader("X-User-Id") Integer userId) {
+    public ApiResult<CartListVO> list(@Parameter(hidden = true) @RequestHeader("X-User-Id") Integer userId) {
         return ApiResult.ok("操作成功", cartService.list(userId));
     }
 
@@ -53,7 +55,7 @@ public class CartController {
     @ApiResponse(responseCode = "200", description = "更新成功")
     @SecurityRequirement(name = "bearerAuth")
     @PutMapping("/update")
-    public ApiResult update(@Parameter(hidden = true) @RequestHeader("X-User-Id") Integer userId, @RequestBody @Valid CartUpdateDTO dto) {
+    public ApiResult<Void> update(@Parameter(hidden = true) @RequestHeader("X-User-Id") Integer userId, @RequestBody @Valid CartUpdateDTO dto) {
         cartService.update(userId, dto.getCartId(), dto.getQuantity());
         return ApiResult.ok("更新成功");
     }
@@ -62,7 +64,7 @@ public class CartController {
     @ApiResponse(responseCode = "200", description = "删除成功")
     @SecurityRequirement(name = "bearerAuth")
     @DeleteMapping("/remove")
-    public ApiResult remove(@Parameter(hidden = true) @RequestHeader("X-User-Id") Integer userId, @RequestBody @Valid CartRemoveDTO dto) {
+    public ApiResult<Void> remove(@Parameter(hidden = true) @RequestHeader("X-User-Id") Integer userId, @RequestBody @Valid CartRemoveDTO dto) {
         cartService.remove(userId, dto.getCartIds());
         return ApiResult.ok("删除成功");
     }
@@ -71,7 +73,7 @@ public class CartController {
     @ApiResponse(responseCode = "200", description = "清空成功")
     @SecurityRequirement(name = "bearerAuth")
     @DeleteMapping("/clear")
-    public ApiResult clear(@Parameter(hidden = true) @RequestHeader("X-User-Id") Integer userId) {
+    public ApiResult<Void> clear(@Parameter(hidden = true) @RequestHeader("X-User-Id") Integer userId) {
         cartService.clear(userId);
         return ApiResult.ok("已清空购物车");
     }
@@ -80,7 +82,7 @@ public class CartController {
     @ApiResponse(responseCode = "200", description = "更新成功")
     @SecurityRequirement(name = "bearerAuth")
     @PutMapping("/select")
-    public ApiResult select(@Parameter(hidden = true) @RequestHeader("X-User-Id") Integer userId, @RequestBody @Valid CartSelectDTO dto) {
+    public ApiResult<Void> select(@Parameter(hidden = true) @RequestHeader("X-User-Id") Integer userId, @RequestBody @Valid CartSelectDTO dto) {
         cartService.select(userId, dto.getCartId(), dto.getSelected());
         return ApiResult.ok("更新成功");
     }

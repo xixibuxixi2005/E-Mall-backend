@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.whut.emall.business.dto.RegisterDTO;
 import com.whut.emall.business.service.AuthService;
+import com.whut.emall.business.vo.LoginVO;
 import com.whut.emall.common.entity.ApiException;
 import com.whut.emall.common.entity.ApiResult;
 
@@ -34,47 +35,47 @@ public class AuthController {
     @Operation(summary = "用户注册", description = "提交注册信息创建新用户")
     @ApiResponse(responseCode = "200", description = "注册成功")
     @PostMapping("register")
-    public String register(@RequestBody @Validated RegisterDTO dto) {
+    public ApiResult<Void> register(@RequestBody @Validated RegisterDTO dto) {
         authService.register(dto);
-        return "注册成功";
+        return ApiResult.ok("注册成功");
     }
 
     @Operation(summary = "发送邮箱验证码", description = "向指定邮箱发送注册或登录验证码")
     @ApiResponse(responseCode = "200", description = "发送成功")
     @PostMapping("send-code")
-    public String sendCode(@RequestBody Map<String,String> body) {
+    public ApiResult<Void> sendCode(@RequestBody Map<String,String> body) {
         String email = body.getOrDefault("email", "");
         if (email.isEmpty()) throw ApiException.err(400, "无效邮箱");
         authService.sendCode(email);
-        return "邮箱验证码发送成功，5分钟内有效";
+        return ApiResult.ok("邮箱验证码发送成功，5分钟内有效");
     }
 
     @Operation(summary = "用户登录", description = "使用邮箱和密码登录并返回 token 信息")
     @ApiResponse(responseCode = "200", description = "登录成功")
     @PostMapping("login")
-    public ApiResult login(@RequestBody @Validated LoginDTO dto) {
-        return new ApiResult("登陆成功", authService.login(dto.getEmail(), dto.getPassword()));
+    public ApiResult<LoginVO> login(@RequestBody @Validated LoginDTO dto) {
+        return ApiResult.ok("登陆成功", authService.login(dto.getEmail(), dto.getPassword()));
     }
 
     @Operation(summary = "刷新 token", description = "使用 refreshToken 刷新 accessToken")
     @ApiResponse(responseCode = "200", description = "刷新成功")
     @SecurityRequirement(name = "bearerAuth")
     @PostMapping("refresh")
-    public ApiResult refresh(
+    public ApiResult<Map<String,String>> refresh(
             @RequestBody Map<String,String> body,
             @Parameter(hidden = true) @RequestHeader("Authorization") String accessToken
         ) {
         String refreshToken = body.getOrDefault("refreshToken", "").strip();
         if (refreshToken.isEmpty()) throw ApiException.err(400, "无效refreshToken！");
-        return new ApiResult("刷新成功", authService.refresh(accessToken.substring(7), refreshToken));
+        return ApiResult.ok("刷新成功", Map.of("token", authService.refresh(accessToken.substring(7), refreshToken)));
     }
 
     @Operation(summary = "退出登录", description = "当前返回成功，后续可扩展黑名单机制")
     @ApiResponse(responseCode = "200", description = "退出成功")
     @SecurityRequirement(name = "bearerAuth")
     @PostMapping("logout")
-    public ApiResult logout(@Parameter(hidden = true) @RequestHeader("Authorization") String accessToken) {
-        return new ApiResult("退出成功");
+    public ApiResult<Void> logout(@Parameter(hidden = true) @RequestHeader("Authorization") String accessToken) {
+        return ApiResult.ok("退出成功");
     }
 
     @Data

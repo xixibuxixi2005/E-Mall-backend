@@ -12,6 +12,8 @@ import org.springframework.web.bind.annotation.RestController;
 import com.whut.emall.business.config.EMallResponse;
 import com.whut.emall.business.entity.enums.UserStatus;
 import com.whut.emall.business.service.AdminService;
+import com.whut.emall.business.vo.SysUserInfo;
+import com.whut.emall.business.vo.SysUserListVO;
 import com.whut.emall.common.entity.ApiException;
 import com.whut.emall.common.entity.ApiResult;
 
@@ -38,7 +40,7 @@ public class AdminController {
     @Operation(summary = "创建客服用户", description = "仅允许创建 roleCode=CS 的客服账号")
     @ApiResponse(responseCode = "200", description = "创建成功")
     @PostMapping("/user/create")
-    public ApiResult userCreate(@RequestBody @Valid UserCreateDTO dto) {
+    public ApiResult<SysUserInfo> userCreate(@RequestBody @Valid UserCreateDTO dto) {
         if (!"CS".equals(dto.getRoleCode())) 
             throw ApiException.err(400, "前端仅能新建客服(roleCode=CS)");
         var result = adminService.userCreate(dto.getEmail(), dto.getPassword(), dto.getUsername(), dto.getPhone(), dto.getRoleCode());
@@ -48,7 +50,7 @@ public class AdminController {
     @Operation(summary = "分页查询用户", description = "按用户名和角色筛选用户列表")
     @ApiResponse(responseCode = "200", description = "查询成功")
     @GetMapping("/user/list")
-    public ApiResult userList(
+    public ApiResult<SysUserListVO> userList(
         @RequestParam(required = false, defaultValue = "1") Integer pageNum,
         @RequestParam(required = false, defaultValue = "10") Integer pageSize,
         @RequestParam(required = false) String username,
@@ -61,7 +63,7 @@ public class AdminController {
     @ApiResponse(responseCode = "200", description = "更新成功")
     @SecurityRequirement(name = "bearerAuth")
     @PutMapping("/user/status")
-    public ApiResult setUserStatus(@Parameter(hidden = true) @RequestHeader("X-User-Id") int selfId,@RequestBody @Valid UserStatusDTO dto) {
+    public ApiResult<Void> setUserStatus(@Parameter(hidden = true) @RequestHeader("X-User-Id") int selfId,@RequestBody @Valid UserStatusDTO dto) {
         if (dto.getUserId() == selfId)
             throw ApiException.err(400, "不允许对当前用户进行该操作");
         adminService.setUserStatus(dto.getUserId(), dto.getStatus());

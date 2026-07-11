@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.whut.emall.business.service.MemberService;
+import com.whut.emall.business.vo.MemberInfo;
 import com.whut.emall.common.entity.ApiResult;
 
 import jakarta.annotation.Resource;
@@ -32,7 +33,7 @@ public class MemberController {
     @ApiResponse(responseCode = "200", description = "查询成功")
     @SecurityRequirement(name = "bearerAuth")
     @GetMapping("info")
-    public ApiResult getInfo(@Parameter(hidden = true) @RequestHeader("X-User-Id") Integer userId) {
+    public ApiResult<MemberInfo> getInfo(@Parameter(hidden = true) @RequestHeader("X-User-Id") Integer userId) {
         return ApiResult.ok("操作成功", memberService.getInfoById(userId));
     }
     
@@ -40,7 +41,7 @@ public class MemberController {
     @ApiResponse(responseCode = "200", description = "修改成功")
     @SecurityRequirement(name = "bearerAuth")
     @PutMapping("info")
-    public ApiResult setInfo(@Parameter(hidden = true) @RequestHeader("X-User-Id") Integer userId, @RequestBody @Valid UserInfoDTO dto) {
+    public ApiResult<Void> setInfo(@Parameter(hidden = true) @RequestHeader("X-User-Id") Integer userId, @RequestBody @Valid UserInfoDTO dto) {
         memberService.setInfoById(userId, dto.getEmail(), dto.getPhone(), dto.getAvatar());
         return ApiResult.ok("修改成功");
     }
@@ -49,7 +50,7 @@ public class MemberController {
     @ApiResponse(responseCode = "200", description = "修改成功")
     @SecurityRequirement(name = "bearerAuth")
     @PutMapping("password")
-    public ApiResult setPassword(@Parameter(hidden = true) @RequestHeader("X-User-Id") Integer userId, @RequestBody @Valid PasswordDTO dto) {
+    public ApiResult<Void> setPassword(@Parameter(hidden = true) @RequestHeader("X-User-Id") Integer userId, @RequestBody @Valid PasswordDTO dto) {
         memberService.setPassword(userId, dto.getOldPassword(), dto.getNewPassword());
         return ApiResult.ok("密码修改成功");
     }
