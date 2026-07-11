@@ -39,6 +39,7 @@ public class AdminController {
 
     @Operation(summary = "创建客服用户", description = "仅允许创建 roleCode=CS 的客服账号")
     @ApiResponse(responseCode = "200", description = "创建成功")
+    @SecurityRequirement(name = "Authorization")
     @PostMapping("/user/create")
     public ApiResult<SysUserInfo> userCreate(@RequestBody @Valid UserCreateDTO dto) {
         if (!"CS".equals(dto.getRoleCode())) 
@@ -49,6 +50,7 @@ public class AdminController {
 
     @Operation(summary = "分页查询用户", description = "按用户名和角色筛选用户列表")
     @ApiResponse(responseCode = "200", description = "查询成功")
+    @SecurityRequirement(name = "Authorization")
     @GetMapping("/user/list")
     public ApiResult<SysUserListVO> userList(
         @RequestParam(required = false, defaultValue = "1") Integer pageNum,
@@ -61,7 +63,7 @@ public class AdminController {
 
     @Operation(summary = "更新用户状态", description = "管理员可修改指定用户状态，不能修改自己")
     @ApiResponse(responseCode = "200", description = "更新成功")
-    @SecurityRequirement(name = "bearerAuth")
+    @SecurityRequirement(name = "Authorization")
     @PutMapping("/user/status")
     public ApiResult<Void> setUserStatus(@Parameter(hidden = true) @RequestHeader("X-User-Id") int selfId,@RequestBody @Valid UserStatusDTO dto) {
         if (dto.getUserId() == selfId)

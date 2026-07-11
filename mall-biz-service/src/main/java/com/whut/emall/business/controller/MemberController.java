@@ -31,7 +31,7 @@ public class MemberController {
 
     @Operation(summary = "获取会员信息", description = "根据网关注入的 X-User-Id 获取当前会员信息")
     @ApiResponse(responseCode = "200", description = "查询成功")
-    @SecurityRequirement(name = "bearerAuth")
+    @SecurityRequirement(name = "Authorization")
     @GetMapping("info")
     public ApiResult<MemberInfo> getInfo(@Parameter(hidden = true) @RequestHeader("X-User-Id") Integer userId) {
         return ApiResult.ok("操作成功", memberService.getInfoById(userId));
@@ -39,7 +39,7 @@ public class MemberController {
     
     @Operation(summary = "修改会员信息", description = "更新当前会员的邮箱、手机号和头像")
     @ApiResponse(responseCode = "200", description = "修改成功")
-    @SecurityRequirement(name = "bearerAuth")
+    @SecurityRequirement(name = "Authorization")
     @PutMapping("info")
     public ApiResult<Void> setInfo(@Parameter(hidden = true) @RequestHeader("X-User-Id") Integer userId, @RequestBody @Valid UserInfoDTO dto) {
         memberService.setInfoById(userId, dto.getEmail(), dto.getPhone(), dto.getAvatar());
@@ -48,7 +48,7 @@ public class MemberController {
 
     @Operation(summary = "修改密码", description = "使用旧密码修改当前会员密码")
     @ApiResponse(responseCode = "200", description = "修改成功")
-    @SecurityRequirement(name = "bearerAuth")
+    @SecurityRequirement(name = "Authorization")
     @PutMapping("password")
     public ApiResult<Void> setPassword(@Parameter(hidden = true) @RequestHeader("X-User-Id") Integer userId, @RequestBody @Valid PasswordDTO dto) {
         memberService.setPassword(userId, dto.getOldPassword(), dto.getNewPassword());

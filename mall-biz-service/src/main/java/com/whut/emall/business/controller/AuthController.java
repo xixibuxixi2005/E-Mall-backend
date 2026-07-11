@@ -59,7 +59,7 @@ public class AuthController {
 
     @Operation(summary = "刷新 token", description = "使用 refreshToken 刷新 accessToken")
     @ApiResponse(responseCode = "200", description = "刷新成功")
-    @SecurityRequirement(name = "bearerAuth")
+    @SecurityRequirement(name = "Authorization")
     @PostMapping("refresh")
     public ApiResult<Map<String,String>> refresh(
             @RequestBody Map<String,String> body,
@@ -72,7 +72,7 @@ public class AuthController {
 
     @Operation(summary = "退出登录", description = "当前返回成功，后续可扩展黑名单机制")
     @ApiResponse(responseCode = "200", description = "退出成功")
-    @SecurityRequirement(name = "bearerAuth")
+    @SecurityRequirement(name = "Authorization")
     @PostMapping("logout")
     public ApiResult<Void> logout(@Parameter(hidden = true) @RequestHeader("Authorization") String accessToken) {
         return ApiResult.ok("退出成功");
