@@ -1,11 +1,13 @@
 package com.whut.emall.business.service;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 import org.springframework.stereotype.Service;
 import jakarta.annotation.Resource;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.whut.emall.business.entity.Product;
 import com.whut.emall.business.entity.enums.ProductStatus;
 import com.whut.emall.business.mapper.ProductMapper;
 import com.whut.emall.business.vo.ProductDetailVO;
@@ -20,6 +22,29 @@ public class ProductService {
         Page<ProductDetailVO> page = new Page<>(pageNum, pageSize);
         Page<ProductDetailVO> result = productMapper.selectProductPage(page, name, status, minPrice, maxPrice);
         return new ProductListVO(result);
+    }
+
+    public int createProduct(
+        String name,
+        String subTitle,
+        String description,
+        Integer categoryId,
+        BigDecimal price,
+        BigDecimal originalPrice,
+        Integer stock,
+        List<String> imageUrls
+    ) {
+        var product = new Product();
+        product.setName(name);
+        product.setSubTitle(subTitle);
+        product.setDescription(description);
+        product.setCategoryId(categoryId);
+        product.setPrice(price);
+        product.setOriginalPrice(originalPrice);
+        product.setStock(stock);
+        product.setImageUrls(imageUrls);
+        productMapper.insert(product);
+        return productMapper.getProductByName(name).getId();
     }
 
     public ProductDetailVO getProductById(Integer id) {

@@ -63,4 +63,7 @@ public interface ProductMapper extends BaseMapper<Product> {
         BigDecimal minPrice,
         BigDecimal maxPrice
     );
+
+    @Select("SELECT * FROM product WHERE name = #{name} LIMIT 1")
+    Product getProductByName(String name);
 }
