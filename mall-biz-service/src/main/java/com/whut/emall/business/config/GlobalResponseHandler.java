@@ -19,7 +19,9 @@ public class GlobalResponseHandler implements ResponseBodyAdvice<Object>{
     private final ObjectMapper objectMapper = new ObjectMapper();
     @Override
     public boolean supports(MethodParameter returnType, Class<? extends HttpMessageConverter<?>> converterType) {
-        if (returnType.hasMethodAnnotation(EMallResponse.class) || returnType.getDeclaringClass().isAnnotationPresent(EMallResponse.class))
+        if (returnType.hasMethodAnnotation(EMallResponse.class) ||
+            returnType.getDeclaringClass().isAnnotationPresent(EMallResponse.class) ||
+            returnType.getParameterType().isAssignableFrom(ApiResult.class))
             return true;
         return false;
     }
