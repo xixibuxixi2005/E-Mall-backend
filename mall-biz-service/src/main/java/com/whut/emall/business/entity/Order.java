@@ -9,7 +9,7 @@ import com.whut.emall.business.entity.enums.OrderStatus;
 import lombok.Data;
 
 @Data
-@TableName("order")
+@TableName("`order`")
 public class Order {
     Integer id;
     String orderNo;

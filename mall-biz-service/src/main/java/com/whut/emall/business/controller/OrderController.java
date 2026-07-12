@@ -17,6 +17,9 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.Resource;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
+import lombok.Data;
 
 import java.sql.Timestamp;
 
@@ -24,6 +27,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 
 
 @RestController
@@ -48,7 +53,7 @@ public class OrderController {
         @RequestParam(required = false) Timestamp endTime
     ) {
         if (!"ADMIN".equals(role) && !"CS".equals(role))
-            throw ApiException.err(404, "无权限查看订单列表");
+            throw ApiException.err(403, "无权限查看订单列表");
         return ApiResult.ok("查询成功", orderService.orderList(pageNum, pageSize, orderNo, userId, status, startTime, endTime));
     }
     
@@ -65,4 +70,24 @@ public class OrderController {
         return ApiResult.ok("查询成功", orderService.orderDetail(uid, id));
     }
     
+    @Operation(summary = "订单状态更新", description = "更新订单状态")
+    @ApiResponse(responseCode = "200", description = "状态更新成功")
+    @SecurityRequirement(name = "Authorization")
+    @PutMapping("{id}/status")
+    public ApiResult<Void> updateOrderStatus(
+        @Parameter(hidden = true) @RequestHeader("X-Role") String role,
+        @PathVariable Integer id,
+        @RequestBody @Valid OrderStatusDTO dto
+    ) {
+        if (!"ADMIN".equals(role))
+            throw ApiException.err(403, "无权限更新订单状态");
+        orderService.updateStatus(id, dto.getStatus(), dto.getShippingNo());
+        return ApiResult.ok("状态更新成功");
+    }
+
+    @Data
+    static class OrderStatusDTO {
+        @NotNull(message = "status 不可为空") OrderStatus status;
+        String shippingNo;
+    }
 }

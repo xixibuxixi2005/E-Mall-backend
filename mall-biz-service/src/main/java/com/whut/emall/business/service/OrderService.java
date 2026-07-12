@@ -6,12 +6,14 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.whut.emall.business.entity.Order;
 import com.whut.emall.business.entity.enums.OrderStatus;
 import com.whut.emall.business.mapper.OrderMapper;
 import com.whut.emall.business.vo.OrderDetailVO;
 import com.whut.emall.business.vo.OrderItemVO;
 import com.whut.emall.business.vo.OrderListVO;
 import com.whut.emall.business.vo.OrderVO;
+import com.whut.emall.common.entity.ApiException;
 
 import jakarta.annotation.Resource;
 
@@ -27,14 +29,35 @@ public class OrderService {
     public OrderDetailVO orderDetail(Integer uid, Integer id) {
         OrderVO order = orderMapper.selectOrderVOById(id);
         if (order == null)
-            throw new RuntimeException("订单不存在");
+            throw ApiException.err(404, "订单不存在");
         if (uid != null && !uid.equals(order.getUserId()))
-            throw new RuntimeException("无权限查看该订单");
+            throw ApiException.err(403, "无权限查看该订单");
         List<OrderItemVO> items = orderMapper.selectItemsByOrderId(id);
         OrderDetailVO vo = new OrderDetailVO();
         vo.setOrder(order);
         vo.setItems(items);
         return vo;
+    }
 
+    public void updateStatus(Integer id, OrderStatus status, String shippingNo) {
+        Order order = orderMapper.selectById(id);
+        if (order == null)
+            throw ApiException.err(404, "订单不存在");
+        order.setStatus(status);
+        switch (status) {
+            case PAID:
+                order.setPayTime(new Timestamp(System.currentTimeMillis()));
+                break;
+            case SHIPPED:
+                order.setShippingTime(new Timestamp(System.currentTimeMillis()));
+                // TODO: 设置快递单号
+                break;
+            case FINISHED:
+                order.setFinishTime(new Timestamp(System.currentTimeMillis()));
+                break;
+            default:
+                break;
+        }
+        orderMapper.updateById(order);
     }
 }
