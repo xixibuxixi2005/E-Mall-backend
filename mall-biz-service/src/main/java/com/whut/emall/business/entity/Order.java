@@ -14,7 +14,6 @@ public class Order {
     Integer id;
     String orderNo;
     Integer userId;
-    BigDecimal totalAmount;
     BigDecimal payAmount;
     OrderStatus status;
     Timestamp payTime;

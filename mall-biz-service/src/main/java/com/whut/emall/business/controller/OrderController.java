@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.whut.emall.business.config.EMallResponse;
 import com.whut.emall.business.entity.enums.OrderStatus;
 import com.whut.emall.business.service.OrderService;
+import com.whut.emall.business.vo.OrderDetailVO;
 import com.whut.emall.business.vo.OrderListVO;
 import com.whut.emall.common.entity.ApiException;
 import com.whut.emall.common.entity.ApiResult;
@@ -20,6 +21,7 @@ import jakarta.annotation.Resource;
 import java.sql.Timestamp;
 
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestParam;
 
@@ -35,7 +37,7 @@ public class OrderController {
     @ApiResponse(responseCode = "200", description = "查询成功")
     @SecurityRequirement(name = "Authorization")
     @GetMapping("list")
-    public ApiResult<OrderListVO> getMethodName(
+    public ApiResult<OrderListVO> getOrderList(
         @Parameter(hidden = true) @RequestHeader("X-Role") String role,
         @RequestParam(required = false, defaultValue = "1") Integer pageNum,
         @RequestParam(required = false, defaultValue = "10") Integer pageSize,
@@ -48,6 +50,19 @@ public class OrderController {
         if (!"ADMIN".equals(role) && !"CS".equals(role))
             throw ApiException.err(404, "无权限查看订单列表");
         return ApiResult.ok("查询成功", orderService.orderList(pageNum, pageSize, orderNo, userId, status, startTime, endTime));
+    }
+    
+    @Operation(summary = "订单详情", description = "获取订单的具体内容")
+    @ApiResponse(responseCode = "200", description = "查询成功")
+    @SecurityRequirement(name = "Authorization")
+    @GetMapping("{id}")
+    public ApiResult<OrderDetailVO> getOrderDetail(
+        @Parameter(hidden = true) @RequestHeader("X-Role") String role,
+        @Parameter(hidden = true) @RequestHeader("X-User-Id") Integer uid,
+        @PathVariable Integer id
+    ) {
+        if ("ADMIN".equals(role) || "CS".equals(role)) uid = null;
+        return ApiResult.ok("查询成功", orderService.orderDetail(uid, id));
     }
     
 }
