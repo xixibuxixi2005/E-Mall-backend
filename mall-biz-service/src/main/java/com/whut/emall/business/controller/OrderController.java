@@ -1,0 +1,53 @@
+package com.whut.emall.business.controller;
+
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.whut.emall.business.config.EMallResponse;
+import com.whut.emall.business.entity.enums.OrderStatus;
+import com.whut.emall.business.service.OrderService;
+import com.whut.emall.business.vo.OrderListVO;
+import com.whut.emall.common.entity.ApiException;
+import com.whut.emall.common.entity.ApiResult;
+
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.annotation.Resource;
+
+import java.sql.Timestamp;
+
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestParam;
+
+
+@RestController
+@RequestMapping("/biz/order")
+@EMallResponse
+@Tag(name = "订单接口", description = "查看订单详情")
+public class OrderController {
+    @Resource OrderService orderService;
+
+    @Operation(summary = "订单列表", description = "分页查询订单列表，可按订单号、用户ID、订单状态、起始时间和结束时间进行筛选")
+    @ApiResponse(responseCode = "200", description = "查询成功")
+    @SecurityRequirement(name = "Authorization")
+    @GetMapping("list")
+    public ApiResult<OrderListVO> getMethodName(
+        @Parameter(hidden = true) @RequestHeader("X-Role") String role,
+        @RequestParam(required = false, defaultValue = "1") Integer pageNum,
+        @RequestParam(required = false, defaultValue = "10") Integer pageSize,
+        @RequestParam(required = false) String orderNo,
+        @RequestParam(required = false) Integer userId,
+        @RequestParam(required = false) OrderStatus status,
+        @RequestParam(required = false) Timestamp startTime,
+        @RequestParam(required = false) Timestamp endTime
+    ) {
+        if (!"ADMIN".equals(role) && !"CS".equals(role))
+            throw ApiException.err(404, "无权限查看订单列表");
+        return ApiResult.ok("查询成功", orderService.orderList(pageNum, pageSize, orderNo, userId, status, startTime, endTime));
+    }
+    
+}
