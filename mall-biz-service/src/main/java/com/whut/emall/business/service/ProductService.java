@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import jakarta.annotation.Resource;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.whut.emall.business.entity.Product;
 import com.whut.emall.business.entity.enums.ProductStatus;
 import com.whut.emall.business.mapper.ProductMapper;
@@ -15,7 +16,7 @@ import com.whut.emall.business.vo.ProductListVO;
 import com.whut.emall.common.entity.ApiException;
 
 @Service
-public class ProductService {
+public class ProductService extends ServiceImpl<ProductMapper, Product>{
     @Resource ProductMapper productMapper;
 
     public ProductListVO productlist(Integer pageNum, Integer pageSize, String name, ProductStatus status, BigDecimal minPrice, BigDecimal maxPrice) {

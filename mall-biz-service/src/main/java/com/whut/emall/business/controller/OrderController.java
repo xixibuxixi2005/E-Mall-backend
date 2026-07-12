@@ -4,6 +4,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.whut.emall.business.config.EMallResponse;
+import com.whut.emall.business.entity.Order;
 import com.whut.emall.business.entity.enums.OrderStatus;
 import com.whut.emall.business.service.OrderService;
 import com.whut.emall.business.vo.OrderDetailVO;
@@ -18,13 +19,16 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.Resource;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 import java.sql.Timestamp;
+import java.util.List;
 
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -84,10 +88,35 @@ public class OrderController {
         orderService.updateStatus(id, dto.getStatus(), dto.getShippingNo());
         return ApiResult.ok("状态更新成功");
     }
+    
+    @Operation(summary = "创建订单", description = "普通用户提交订单")
+    @ApiResponse(responseCode = "200", description = "订单创建成功，请完成支付")
+    @SecurityRequirement(name = "Authorization")
+    @PostMapping
+    public ApiResult<Order> createOrder(
+        @Parameter(hidden = true) @RequestHeader("X-User-Id") Integer uid,
+        @RequestBody @Valid OrderCreateDTO dto
+    ) {
+        Order order = orderService.createOrder(uid, dto.getCartIds(), dto.getReceiverName(), dto.getReceiverPhone(), dto.getReceiverAddress(), dto.getRemark());
+        return ApiResult.ok("订单创建成功，请完成支付", order);
+    }
 
     @Data
     static class OrderStatusDTO {
         @NotNull(message = "status 不可为空") OrderStatus status;
         String shippingNo;
+    }
+
+    @Data
+    static class OrderCreateDTO {
+        @NotEmpty(message = "至少选择一个商品")
+        List<Integer> cartIds;
+        @NotEmpty(message = "收货人不可为空")
+        String receiverName;
+        @NotEmpty(message = "收货人电话号码不可为空")
+        String receiverPhone;
+        @NotEmpty(message = "收货地址不可为空")
+        String receiverAddress;
+        String remark;
     }
 }
