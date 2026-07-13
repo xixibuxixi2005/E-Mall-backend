@@ -5,10 +5,10 @@ import lombok.Data;
 
 @Data
 @AllArgsConstructor
-public class ApiResult {
+public class ApiResult<T> {
     int code;
     String msg;
-    Object data;
+    T data;
 
     public ApiResult(String message){
         this(200, message, null);
@@ -16,14 +16,14 @@ public class ApiResult {
     public ApiResult(int code, String message){
         this(code, message, null);
     }
-    public ApiResult(String message, Object data){
+    public ApiResult(String message, T data){
         this(200, message, data);
     }
 
-    public static ApiResult ok(String message){
-        return new ApiResult(message);
+    public static ApiResult<Void> ok(String message){
+        return new ApiResult<>(message);
     }
-    public static ApiResult ok(String message, Object data){
-        return new ApiResult(message, data);
+    public static <T> ApiResult<T> ok(String message, T data){
+        return new ApiResult<T>(message, data);
     }
 }

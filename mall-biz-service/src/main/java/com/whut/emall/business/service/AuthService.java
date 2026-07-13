@@ -1,7 +1,5 @@
 package com.whut.emall.business.service;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Random;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ScheduledFuture;
@@ -17,6 +15,7 @@ import com.whut.emall.business.dto.RegisterDTO;
 import com.whut.emall.business.entity.Member;
 import com.whut.emall.business.entity.SysUser;
 import com.whut.emall.business.entity.enums.UserStatus;
+import com.whut.emall.business.vo.LoginVO;
 import com.whut.emall.common.entity.ApiException;
 import com.whut.emall.common.entity.JwtPayload;
 import com.whut.emall.common.utils.JwtUtils;
@@ -89,9 +88,7 @@ public class AuthService {
         }
     }
 
-    public Map<String,Object> login(String email, String password) {
-        Map<String,Object> result = new HashMap<>();
-
+    public LoginVO login(String email, String password) {
         SysUser sysUser = sysUserService.getSysUserByEmail(email);
         if (sysUser != null) {
             if(!PasswordUtils.verifyPassword(password, sysUser.getPassword()))
@@ -99,12 +96,14 @@ public class AuthService {
             if (sysUser.getStatus() == UserStatus.INVALID)
                 throw ApiException.err(403, "账号已被禁用");
             JwtPayload payload = new JwtPayload(sysUser.getId(), sysUser.getEmail(), sysUser.getRoleCode());
-            result.put("token", jwtUtils.makeAccessToken(payload));
-            result.put("refreshToken", jwtUtils.makeRefreshToken(payload));
-            result.put("username", sysUser.getUsername());
-            result.put("roleCode", sysUser.getRoleCode());
-            result.put("userId", sysUser.getId());
-            result.put("phone", sysUser.getPhone());
+            return new LoginVO(
+                jwtUtils.makeAccessToken(payload),
+                jwtUtils.makeRefreshToken(payload),
+                sysUser.getUsername(),
+                sysUser.getRoleCode(),
+                sysUser.getId(),
+                sysUser.getPhone()
+            );
         } else {
             Member member = memberService.getMemberByEmail(email);
             if (member == null || !PasswordUtils.verifyPassword(password, member.getPassword()))
@@ -112,21 +111,22 @@ public class AuthService {
             if (member.getStatus() == UserStatus.INVALID)
                 throw ApiException.err(403, "账号已被禁用");
             JwtPayload payload = new JwtPayload(member.getId(), member.getEmail(), "MEMBER");
-            result.put("token", jwtUtils.makeAccessToken(payload));
-            result.put("refreshToken", jwtUtils.makeRefreshToken(payload));
-            result.put("username", member.getUsername());
-            result.put("roleCode", "MEMBER");
-            result.put("userId", member.getId());
-            result.put("phone", member.getPhone());
+            return new LoginVO(
+                jwtUtils.makeAccessToken(payload),
+                jwtUtils.makeRefreshToken(payload),
+                member.getUsername(),
+                "MEMBER",
+                member.getId(),
+                member.getPhone()
+            );
         }
-        return result;
     }
 
-    public Map<String, String> refresh(String token, String refreshToken) {
+    public String refresh(String token, String refreshToken) {
         JwtPayload tokenJWT = jwtUtils.parserAccessToken(token);
         JwtPayload refreshJWT = jwtUtils.parserRefreshToken(refreshToken);
         if (!tokenJWT.equals(refreshJWT))
             throw ApiException.err(401, "无效refreshToken！");
-        return Map.of("token", jwtUtils.makeAccessToken(tokenJWT));
+        return jwtUtils.makeAccessToken(tokenJWT);
     }
 }

@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.whut.emall.business.entity.Cart;
 import com.whut.emall.business.entity.Product;
 import com.whut.emall.business.entity.enums.ProductStatus;
@@ -70,14 +71,26 @@ public class CartService {
     }
 
     public void remove(Integer userId, List<Integer> cartIds) {
-        cartMapper.deleteByIds(userId, cartIds);
+        LambdaQueryWrapper<Cart> wrapper = new LambdaQueryWrapper<>();
+        wrapper.eq(Cart::getUserId, userId).in(Cart::getId, cartIds);
+        cartMapper.delete(wrapper);
     }
 
     public void clear(Integer userId) {
-        cartMapper.clearByUserId(userId);
+        LambdaQueryWrapper<Cart> wrapper = new LambdaQueryWrapper<>();
+        wrapper.eq(Cart::getUserId, userId);
+        cartMapper.delete(wrapper);
     }
 
     public void select(Integer userId, Integer cartId, Boolean selected) {
         cartMapper.updateSelected(userId, cartId, selected);
+    }
+
+    public List<Cart> selectListByIdAndUserId(Integer userId, List<Integer> cartIds) {
+        LambdaQueryWrapper<Cart> wrapper = new LambdaQueryWrapper<>();
+        wrapper.eq(Cart::getUserId, userId)
+            .eq(Cart::getSelected, true)
+            .in(Cart::getId, cartIds);
+        return cartMapper.selectList(wrapper);
     }
 }

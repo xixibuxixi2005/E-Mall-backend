@@ -30,7 +30,6 @@ public class AdminFilter implements GlobalFilter,Ordered{
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
         var request = exchange.getRequest();
-        var response = exchange.getResponse();
 
         String path = request.getURI().getPath();
         String role = request.getHeaders().getFirst("X-Role");

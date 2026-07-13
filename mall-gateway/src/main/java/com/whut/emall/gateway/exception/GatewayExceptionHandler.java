@@ -38,7 +38,7 @@ public class GatewayExceptionHandler implements ErrorWebExceptionHandler, Ordere
             return Mono.error(ex);
         }
 
-        ApiResult result;
+        ApiResult<?> result;
         HttpStatusCode statusCode = HttpStatus.INTERNAL_SERVER_ERROR;
 
         if (ex instanceof ApiException apiException) {
@@ -46,10 +46,10 @@ public class GatewayExceptionHandler implements ErrorWebExceptionHandler, Ordere
             statusCode = HttpStatus.valueOf(result.getCode());
         } else if (ex instanceof ResponseStatusException responseStatusException) {
             statusCode = responseStatusException.getStatusCode();
-            result = new ApiResult(statusCode.value(), responseStatusException.getReason() == null ? statusCode.toString() : responseStatusException.getReason(), null);
+            result = new ApiResult<>(statusCode.value(), responseStatusException.getReason() == null ? statusCode.toString() : responseStatusException.getReason(), null);
         } else {
             logger.error("Gateway exception", ex);
-            result = new ApiResult(HttpStatus.INTERNAL_SERVER_ERROR.value(), ex.getMessage() == null ? "Gateway error" : ex.getMessage(), null);
+            result = new ApiResult<>(HttpStatus.INTERNAL_SERVER_ERROR.value(), ex.getMessage() == null ? "Gateway error" : ex.getMessage(), null);
         }
 
         response.getHeaders().setContentType(MediaType.APPLICATION_JSON);

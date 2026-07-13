@@ -8,7 +8,7 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-public enum ProductStatus {
+public enum ProductStatus implements IEmallEnum{
     ON_SALE(1, "上架"),
     OFF_SALE(0, "下架");
 

@@ -54,12 +54,6 @@ public interface CartMapper extends BaseMapper<Cart> {
     @Update("UPDATE cart SET quantity = #{quantity} WHERE id = #{cartId} AND user_id = #{userId}")
     int updateQuantity(Integer userId, Integer cartId, Integer quantity);
 
-    @Delete("<script>DELETE FROM cart WHERE user_id = #{userId} AND id IN <foreach collection='cartIds' item='cartId' open='(' separator=',' close=')'>#{cartId}</foreach></script>")
-    int deleteByIds(Integer userId, List<Integer> cartIds);
-
-    @Delete("DELETE FROM cart WHERE user_id = #{userId}")
-    int clearByUserId(Integer userId);
-
     @Update("UPDATE cart SET selected = #{selected} WHERE id = #{cartId} AND user_id = #{userId}")
     int updateSelected(Integer userId, Integer cartId, Boolean selected);
 }

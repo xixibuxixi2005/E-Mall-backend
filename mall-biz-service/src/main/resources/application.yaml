@@ -1,5 +1,7 @@
 server:
   port: 11000
+  servlet:
+    context-path: /api
 
 spring:
   application:
@@ -29,4 +31,9 @@ mybatis-plus:
     map-underscore-to-camel-case: true
   global-config:
     db-config:
-      id-type: none
+      id-type: auto
+
+springdoc:
+  api-docs:
+    enabled: true
+    path: /biz/v3/api-docs

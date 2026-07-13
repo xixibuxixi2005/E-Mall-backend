@@ -8,10 +8,13 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-public enum MemberLevel implements IEmallEnum{
-    NORMAL(1, "普通会员"),
-    SIVLER(2, "白银会员"),
-    GOLD(3, "黄金会员");
+public enum OrderStatus implements IEmallEnum {
+    PENDING(0, "待支付"),
+    PAID(1, "已支付"),
+    SHIPPED(2, "已发货"),
+    FINISHED(3, "已完成"),
+    CANCELED(4, "已取消"),
+    REFUND(5, "退款中");
 
     @EnumValue final Integer value;
     @JsonValue final String desc;

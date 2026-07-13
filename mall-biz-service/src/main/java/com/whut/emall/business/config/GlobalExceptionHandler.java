@@ -16,37 +16,37 @@ import jakarta.validation.ConstraintViolationException;
 @RestControllerAdvice
 public class GlobalExceptionHandler{
     @ExceptionHandler(ApiException.class)
-    public ApiResult handleApiException(ApiException err) {
+    public ApiResult<?> handleApiException(ApiException err) {
         return err.toResult();
     }
 
     @ExceptionHandler({MethodArgumentNotValidException.class})
-    public ApiResult handleValidationException(MethodArgumentNotValidException err) {
+    public ApiResult<?> handleValidationException(MethodArgumentNotValidException err) {
         return ApiException.err(400, "请求参数校验失败: " + err.getBindingResult().getFieldError().getDefaultMessage()).toResult();
     }
 
     @ExceptionHandler(BindException.class)
-    public ApiResult handleValidationException(BindException err) {
+    public ApiResult<?> handleValidationException(BindException err) {
         return ApiException.err(400, "请求参数校验失败: " + err.getBindingResult().getFieldError().getDefaultMessage()).toResult();
     }
 
     @ExceptionHandler(ConstraintViolationException.class)
-    public ApiResult handleValidationException(ConstraintViolationException err) {
+    public ApiResult<?> handleValidationException(ConstraintViolationException err) {
         return ApiException.err(400, "请求参数校验失败: " + err.getConstraintViolations().iterator().next().getMessage()).toResult();
     }
 
     @ExceptionHandler(HttpMessageNotReadableException.class)
-    public ApiResult handleHttpMessageNotReadableException(HttpMessageNotReadableException err) {
+    public ApiResult<?> handleHttpMessageNotReadableException(HttpMessageNotReadableException err) {
         return ApiException.err(400, "无效参数: " + err.getLocalizedMessage()).toResult();
     }
 
     @ExceptionHandler(NoResourceFoundException.class)
-    public ApiResult handleNoResourceFoundException(NoResourceFoundException err) {
+    public ApiResult<?> handleNoResourceFoundException(NoResourceFoundException err) {
         return ApiException.err(404, "无效的请求路径: " + err.getResourcePath()).toResult();
     }
 
     @ExceptionHandler(Exception.class)
-    public ApiResult handleException(Exception err) {
+    public ApiResult<?> handleException(Exception err) {
         err.printStackTrace();
         return ApiException.err(err.getLocalizedMessage()).toResult();
     }
