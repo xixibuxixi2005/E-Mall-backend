@@ -20,10 +20,13 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.Resource;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.DecimalMin;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
+import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.util.List;
 
@@ -115,6 +118,19 @@ public class OrderController {
         return ApiResult.ok("查询成功", orderService.myOrders(pageNum, pageSize, uid, status));
     }
     
+    @Operation(summary = "支付订单", description = "普通用户支付自己的订单")
+    @ApiResponse(responseCode = "200", description = "订单支付成功")
+    @SecurityRequirement(name = "Authorization")
+    @PutMapping("{id}/pay")
+    public ApiResult<Void> payOrder(
+        @Parameter(hidden = true) @RequestHeader("X-User-Id") Integer uid,
+        @PathVariable Integer id,
+        @RequestBody @Valid OrderPayDTO dto
+    ) {
+        orderService.pay(uid, id, dto.getAmount());
+        return ApiResult.ok("订单支付成功");
+    }
+    
     @Operation(summary = "取消订单", description = "普通用户取消自己的订单（仅限待支付状态）")
     @ApiResponse(responseCode = "200", description = "订单已取消")
     @SecurityRequirement(name = "Authorization")
@@ -145,6 +161,13 @@ public class OrderController {
         @NotEmpty(message = "收货地址不可为空")
         String receiverAddress;
         String remark;
+    }
+
+    @Data
+    static class OrderPayDTO {
+        @NotNull(message = "amount不可为空")
+        @DecimalMin("0")
+        BigDecimal amount;
     }
 
     @Data

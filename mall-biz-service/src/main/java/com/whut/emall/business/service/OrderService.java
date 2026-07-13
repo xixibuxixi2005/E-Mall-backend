@@ -1,5 +1,6 @@
 package com.whut.emall.business.service;
 
+import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -57,6 +58,8 @@ public class OrderService extends ServiceImpl<OrderMapper, Order>{
         order.setStatus(status);
         switch (status) {
             case PAID:
+                if (order.getStatus() != OrderStatus.PENDING)
+                    throw ApiException.err(400, " 仅能支付待支付的订单");
                 order.setPayTime(new Timestamp(System.currentTimeMillis()));
                 break;
             case SHIPPED:
@@ -130,6 +133,22 @@ public class OrderService extends ServiceImpl<OrderMapper, Order>{
         }
         vo.setList(list);
         return vo;
+    }
+
+    public void pay(Integer userId, Integer id, BigDecimal amount) {
+        LambdaQueryWrapper<Order> wrapper = new LambdaQueryWrapper<>();
+        wrapper.eq(Order::getId, id).eq(Order::getUserId, userId);
+        Order order = getOne(wrapper);
+        if (order == null)
+            throw ApiException.err(404, "订单不存在");
+        if (order.getStatus() != OrderStatus.PENDING)
+            throw ApiException.err(400, " 仅能支付待支付的订单");
+        order.setPayAmount(amount.add(order.getPayAmount()));
+        order.setPayTime(new Timestamp(System.currentTimeMillis()));
+        BigDecimal totalAmount = orderDetail(userId, id).getTotalAmount();
+        if (order.getPayAmount().compareTo(totalAmount) != -1)
+            order.setStatus(OrderStatus.PAID);
+        updateById(order);
     }
 
     @Transactional(rollbackFor = Exception.class)
