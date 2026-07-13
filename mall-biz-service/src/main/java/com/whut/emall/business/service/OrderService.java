@@ -19,6 +19,7 @@ import com.whut.emall.business.entity.OrderItem;
 import com.whut.emall.business.entity.Product;
 import com.whut.emall.business.entity.enums.OrderStatus;
 import com.whut.emall.business.mapper.OrderMapper;
+import com.whut.emall.business.vo.OrderDetailListVO;
 import com.whut.emall.business.vo.OrderDetailVO;
 import com.whut.emall.business.vo.OrderItemVO;
 import com.whut.emall.business.vo.OrderListVO;
@@ -46,10 +47,7 @@ public class OrderService extends ServiceImpl<OrderMapper, Order>{
         if (uid != null && !uid.equals(order.getUserId()))
             throw ApiException.err(403, "无权限查看该订单");
         List<OrderItemVO> items = orderMapper.selectItemsByOrderId(id);
-        OrderDetailVO vo = new OrderDetailVO();
-        vo.setOrder(order);
-        vo.setItems(items);
-        return vo;
+        return new OrderDetailVO(order, items);
     }
 
     public void updateStatus(Integer id, OrderStatus status, String shippingNo) {
@@ -118,6 +116,20 @@ public class OrderService extends ServiceImpl<OrderMapper, Order>{
         orderItems.forEach(item -> item.setOrderId(orderId));
         orderItemService.saveBatch(orderItems);
         return getById(orderId);
+    }
+
+    public OrderDetailListVO myOrders(Integer pageNum, Integer pageSize, Integer uid, OrderStatus status) {
+        LambdaQueryWrapper<Order> wrapper = new LambdaQueryWrapper<>();
+        wrapper.eq(Order::getUserId, uid).eq(status != null, Order::getStatus, status);
+        Page<Order> result = page(new Page<>(pageNum, pageSize), wrapper);
+        OrderDetailListVO vo = new OrderDetailListVO();
+        List<OrderDetailVO> list = new ArrayList<>();
+        vo.setTotal(result.getTotal());
+        for (Order order: result.getRecords()) {
+            list.add(orderDetail(uid, order.getId()));
+        }
+        vo.setList(list);
+        return vo;
     }
 
     @Transactional(rollbackFor = Exception.class)

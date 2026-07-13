@@ -7,6 +7,7 @@ import com.whut.emall.business.config.EMallResponse;
 import com.whut.emall.business.entity.Order;
 import com.whut.emall.business.entity.enums.OrderStatus;
 import com.whut.emall.business.service.OrderService;
+import com.whut.emall.business.vo.OrderDetailListVO;
 import com.whut.emall.business.vo.OrderDetailVO;
 import com.whut.emall.business.vo.OrderListVO;
 import com.whut.emall.common.entity.ApiException;
@@ -105,14 +106,13 @@ public class OrderController {
     @ApiResponse(responseCode = "200", description = "查询成功")
     @SecurityRequirement(name = "Authorization")
     @GetMapping("/my/list")
-    public ApiResult<OrderListVO> myOrders(
+    public ApiResult<OrderDetailListVO> myOrders(
         @Parameter(hidden = true) @RequestHeader("X-User-Id") Integer uid,
         @RequestParam(required = false, defaultValue = "1") Integer pageNum,
         @RequestParam(required = false, defaultValue = "10") Integer pageSize,
         @RequestParam(required = false) OrderStatus status
     ) {
-        // TODO: 返回更详细的订单信息
-        return ApiResult.ok("查询成功", orderService.orderList(pageNum, pageSize, null, uid, status, null, null));
+        return ApiResult.ok("查询成功", orderService.myOrders(pageNum, pageSize, uid, status));
     }
     
     @Operation(summary = "取消订单", description = "普通用户取消自己的订单（仅限待支付状态）")
