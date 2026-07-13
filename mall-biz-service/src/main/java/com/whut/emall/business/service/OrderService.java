@@ -1,6 +1,7 @@
 package com.whut.emall.business.service;
 
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -9,10 +10,12 @@ import java.util.Random;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.whut.emall.business.entity.Cart;
 import com.whut.emall.business.entity.Order;
+import com.whut.emall.business.entity.OrderItem;
 import com.whut.emall.business.entity.Product;
 import com.whut.emall.business.entity.enums.OrderStatus;
 import com.whut.emall.business.mapper.OrderMapper;
@@ -26,6 +29,7 @@ import jakarta.annotation.Resource;
 
 @Service
 public class OrderService extends ServiceImpl<OrderMapper, Order>{
+    private final OrderItemService orderItemService;
     @Resource OrderMapper orderMapper;
     @Resource CartService cartService;
     @Resource ProductService productService;
@@ -71,6 +75,10 @@ public class OrderService extends ServiceImpl<OrderMapper, Order>{
     }
 
     final Random random = new Random();
+
+    OrderService(OrderItemService orderItemService) {
+        this.orderItemService = orderItemService;
+    }
     @Transactional(rollbackFor = Exception.class)
     public Order createOrder(Integer userId, List<Integer> cartIds, String receiverName, String receiverPhone, String receiverAddress, String remark) {
         List<Cart> carts = cartService.selectListByIdAndUserId(userId, cartIds);
@@ -80,14 +88,20 @@ public class OrderService extends ServiceImpl<OrderMapper, Order>{
         List<Product> products = productService.listByIds(
             carts.stream().map(c -> c.getProductId()).toList()
         );
+        List<OrderItem> orderItems = new ArrayList<>();
         Map<Integer, Product> productMap = new HashMap<>();
         products.forEach(p -> productMap.put(p.getId(), p));
         for (var cart: carts) {
             Product product = productMap.get(cart.getProductId());
-            if (cart.getQuantity() > product.getStock())
+            if (cart.getQuantity() > product.getStock()) {
                 throw ApiException.err(400, "商品库存量不足：商品id=" + cart.getProductId());
-            else
+            } else {
                 product.setStock(product.getStock()-cart.getQuantity());
+                OrderItem item = new OrderItem();
+                item.setProductId(cart.getProductId());
+                item.setQuantity(cart.getQuantity());
+                orderItems.add(item);
+            }
         }
         
         Order order = new Order();
@@ -100,6 +114,29 @@ public class OrderService extends ServiceImpl<OrderMapper, Order>{
         orderMapper.insert(order);
         cartService.remove(userId, cartIds);
         productService.updateBatchById(products);
-        return getById(order.getId());
+        Integer orderId = order.getId();
+        orderItems.forEach(item -> item.setOrderId(orderId));
+        orderItemService.saveBatch(orderItems);
+        return getById(orderId);
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    public void cancel(Integer userId, Integer id, String reason) {
+        LambdaQueryWrapper<Order> wrapper = new LambdaQueryWrapper<>();
+        wrapper.eq(Order::getId, id).eq(Order::getUserId, userId);
+        Order order = getOne(wrapper);
+        if (order == null)
+            throw ApiException.err(404, "订单不存在");
+        if (order.getStatus() != OrderStatus.PENDING)
+            throw ApiException.err(400, " 仅能取消待支付的订单");
+        List<OrderItem> items = orderItemService.getByOrderId(order.getId());
+        for(var item: items) {
+            Product product = productService.getById(item.getProductId());
+            product.setStock(product.getStock()+item.getQuantity());
+            productService.updateById(product);
+        }
+        order.setStatus(OrderStatus.CANCELED);
+        // TODO: 保存取消原因
+        updateById(order);
     }
 }

@@ -100,6 +100,33 @@ public class OrderController {
         Order order = orderService.createOrder(uid, dto.getCartIds(), dto.getReceiverName(), dto.getReceiverPhone(), dto.getReceiverAddress(), dto.getRemark());
         return ApiResult.ok("订单创建成功，请完成支付", order);
     }
+    
+    @Operation(summary = "个人订单查询", description = "查询用户自身的订单")
+    @ApiResponse(responseCode = "200", description = "查询成功")
+    @SecurityRequirement(name = "Authorization")
+    @GetMapping("/my/list")
+    public ApiResult<OrderListVO> myOrders(
+        @Parameter(hidden = true) @RequestHeader("X-User-Id") Integer uid,
+        @RequestParam(required = false, defaultValue = "1") Integer pageNum,
+        @RequestParam(required = false, defaultValue = "10") Integer pageSize,
+        @RequestParam(required = false) OrderStatus status
+    ) {
+        // TODO: 返回更详细的订单信息
+        return ApiResult.ok("查询成功", orderService.orderList(pageNum, pageSize, null, uid, status, null, null));
+    }
+    
+    @Operation(summary = "取消订单", description = "普通用户取消自己的订单（仅限待支付状态）")
+    @ApiResponse(responseCode = "200", description = "订单已取消")
+    @SecurityRequirement(name = "Authorization")
+    @PutMapping("{id}/cancel")
+    public ApiResult<Void> cancelOrder(
+        @Parameter(hidden = true) @RequestHeader("X-User-Id") Integer uid,
+        @PathVariable Integer id,
+        @RequestBody @Valid OrderCancelDTO dto
+    ) {
+        orderService.cancel(uid, id, dto.getReason());
+        return ApiResult.ok("订单已取消");
+    }
 
     @Data
     static class OrderStatusDTO {
@@ -118,5 +145,10 @@ public class OrderController {
         @NotEmpty(message = "收货地址不可为空")
         String receiverAddress;
         String remark;
+    }
+
+    @Data
+    static class OrderCancelDTO {
+        String reason;
     }
 }
