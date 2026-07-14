@@ -3,13 +3,13 @@ package com.whut.emall.business.controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.whut.emall.business.config.EMallResponse;
 import com.whut.emall.business.entity.Order;
 import com.whut.emall.business.entity.enums.OrderStatus;
 import com.whut.emall.business.service.OrderService;
 import com.whut.emall.business.vo.OrderDetailListVO;
 import com.whut.emall.business.vo.OrderDetailVO;
 import com.whut.emall.business.vo.OrderListVO;
+import com.whut.emall.common.annotation.EMallResponse;
 import com.whut.emall.common.entity.ApiException;
 import com.whut.emall.common.entity.ApiResult;
 
@@ -21,7 +21,6 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.Resource;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.DecimalMin;
-import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;

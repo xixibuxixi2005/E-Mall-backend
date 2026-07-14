@@ -1,0 +1,25 @@
+server:
+  port: 0
+  servlet:
+    context-path: /api/ai
+
+spring:
+  application:
+    name: mall-ai-service
+  cloud:
+    nacos:
+      discovery:
+        server-addr: 127.0.0.1:8848
+  ai:
+    openai:
+      base-url: https://api.deepseek.com
+      api-key: ${DS_KEY}
+      chat:
+        options:
+          model: deepseek-v4-flash 
+          temperature: 0.8
+
+springdoc:
+  api-docs:
+    enabled: true
+    path: /v3/api-docs

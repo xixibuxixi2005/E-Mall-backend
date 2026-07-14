@@ -1,4 +1,4 @@
-package com.whut.emall.business.config;
+package com.whut.emall.common.annotation;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

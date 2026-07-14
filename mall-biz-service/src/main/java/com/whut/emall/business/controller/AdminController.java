@@ -9,11 +9,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.whut.emall.business.config.EMallResponse;
 import com.whut.emall.business.entity.enums.UserStatus;
 import com.whut.emall.business.service.AdminService;
 import com.whut.emall.business.vo.SysUserInfo;
 import com.whut.emall.business.vo.SysUserListVO;
+import com.whut.emall.common.annotation.EMallResponse;
 import com.whut.emall.common.entity.ApiException;
 import com.whut.emall.common.entity.ApiResult;
 

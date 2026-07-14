@@ -1,4 +1,4 @@
-package com.whut.emall.business.config;
+package com.whut.emall.ai.config;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.core.MethodParameter;

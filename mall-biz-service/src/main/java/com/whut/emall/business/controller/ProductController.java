@@ -11,11 +11,11 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 
-import com.whut.emall.business.config.EMallResponse;
 import com.whut.emall.business.entity.enums.ProductStatus;
 import com.whut.emall.business.service.ProductService;
 import com.whut.emall.business.vo.ProductDetailVO;
 import com.whut.emall.business.vo.ProductListVO;
+import com.whut.emall.common.annotation.EMallResponse;
 import com.whut.emall.common.entity.ApiException;
 import com.whut.emall.common.entity.ApiResult;
 
