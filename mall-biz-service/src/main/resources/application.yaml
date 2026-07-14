@@ -14,6 +14,10 @@ spring:
     url: "jdbc:mysql://127.0.0.1:3306/emall"
     username: emall
     password: emmmmmmmmmeeeall
+  data:
+    redis:
+      host: 127.0.0.1
+      port: 6379
   mail:
     host: smtp.qq.com
     port: 465

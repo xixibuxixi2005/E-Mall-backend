@@ -14,6 +14,7 @@
         <module>mall-biz-service</module>
         <module>mall-ai-service</module>
         <module>common-response</module>
+        <module>common-redis</module>
     </modules>
 
     <parent>

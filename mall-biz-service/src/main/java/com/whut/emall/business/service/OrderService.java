@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,15 +25,17 @@ import com.whut.emall.business.vo.OrderItemVO;
 import com.whut.emall.business.vo.OrderListVO;
 import com.whut.emall.business.vo.OrderVO;
 import com.whut.emall.common.entity.ApiException;
+import com.whut.emall.common.utils.UniqueRamdom;
 
 import jakarta.annotation.Resource;
 
 @Service
 public class OrderService extends ServiceImpl<OrderMapper, Order>{
-    private final OrderItemService orderItemService;
     @Resource OrderMapper orderMapper;
     @Resource CartService cartService;
     @Resource ProductService productService;
+    @Resource OrderItemService orderItemService;
+    @Resource UniqueRamdom uniqueRamdom;
 
     public OrderListVO orderList(Integer pageNum, Integer pageSize, String orderNo, Integer userId, OrderStatus status, Timestamp startTime, Timestamp endTime) {
         Page<OrderVO> page = orderMapper.orderList(new Page<>(pageNum, pageSize), orderNo, userId, status, startTime, endTime);
@@ -75,11 +76,6 @@ public class OrderService extends ServiceImpl<OrderMapper, Order>{
         orderMapper.updateById(order);
     }
 
-    final Random random = new Random();
-
-    OrderService(OrderItemService orderItemService) {
-        this.orderItemService = orderItemService;
-    }
     @Transactional(rollbackFor = Exception.class)
     public Order createOrder(Integer userId, List<Integer> cartIds, String receiverName, String receiverPhone, String receiverAddress, String remark) {
         List<Cart> carts = cartService.selectListByIdAndUserId(userId, cartIds);
@@ -106,7 +102,7 @@ public class OrderService extends ServiceImpl<OrderMapper, Order>{
         }
         
         Order order = new Order();
-        order.setOrderNo(String.format("ORD%010d", random.nextLong(10000000000l))); //  TODO:生成订单号
+        order.setOrderNo(uniqueRamdom.getUniqueDateLabel(5, "ORD"));
         order.setUserId(userId);
         order.setReceiverName(receiverName);
         order.setReceiverPhone(receiverPhone);
