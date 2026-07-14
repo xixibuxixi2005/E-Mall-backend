@@ -37,3 +37,7 @@ springdoc:
   api-docs:
     enabled: true
     path: /biz/v3/api-docs
+
+emall:
+  static_path:
+    doc: ./static/doc
