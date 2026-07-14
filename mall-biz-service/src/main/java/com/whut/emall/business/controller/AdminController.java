@@ -13,7 +13,6 @@ import com.whut.emall.business.entity.enums.UserStatus;
 import com.whut.emall.business.service.AdminService;
 import com.whut.emall.business.vo.SysUserInfo;
 import com.whut.emall.business.vo.SysUserListVO;
-import com.whut.emall.common.annotation.EMallResponse;
 import com.whut.emall.common.entity.ApiException;
 import com.whut.emall.common.entity.ApiResult;
 
@@ -33,7 +32,6 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 @Tag(name = "管理接口", description = "用户管理相关接口")
 @RestController
 @RequestMapping("/admin")
-@EMallResponse
 public class AdminController {
     @Resource AdminService adminService;
 

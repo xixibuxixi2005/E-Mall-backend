@@ -15,7 +15,6 @@ import com.whut.emall.business.entity.enums.ProductStatus;
 import com.whut.emall.business.service.ProductService;
 import com.whut.emall.business.vo.ProductDetailVO;
 import com.whut.emall.business.vo.ProductListVO;
-import com.whut.emall.common.annotation.EMallResponse;
 import com.whut.emall.common.entity.ApiException;
 import com.whut.emall.common.entity.ApiResult;
 
@@ -43,7 +42,6 @@ import org.springframework.web.bind.annotation.RequestHeader;
 @Tag(name = "商品接口", description = "商品详情查询")
 @RestController
 @RequestMapping("/biz/product")
-@EMallResponse
 public class ProductController {
     @Resource ProductService productService;
 

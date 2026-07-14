@@ -9,7 +9,6 @@ import com.whut.emall.business.service.OrderService;
 import com.whut.emall.business.vo.OrderDetailListVO;
 import com.whut.emall.business.vo.OrderDetailVO;
 import com.whut.emall.business.vo.OrderListVO;
-import com.whut.emall.common.annotation.EMallResponse;
 import com.whut.emall.common.entity.ApiException;
 import com.whut.emall.common.entity.ApiResult;
 
@@ -40,7 +39,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 @RestController
 @RequestMapping("/biz/order")
-@EMallResponse
 @Tag(name = "订单接口", description = "查看订单详情")
 public class OrderController {
     @Resource OrderService orderService;

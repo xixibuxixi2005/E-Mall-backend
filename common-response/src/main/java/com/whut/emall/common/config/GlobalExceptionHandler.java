@@ -1,4 +1,4 @@
-package com.whut.emall.ai.config;
+package com.whut.emall.common.config;
 
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.validation.BindException;
