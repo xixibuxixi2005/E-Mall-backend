@@ -14,6 +14,7 @@ import com.whut.emall.common.entity.ApiException;
 public class AdminFilter implements GlobalFilter,Ordered{
     private final String[] adminPrefix = {
         "/api/admin",
+        "/api/ai/knowledge",
     };
     private final String[] nonAdminPrefix = {
     };

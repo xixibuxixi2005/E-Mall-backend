@@ -123,7 +123,7 @@ public class AuthService {
     }
 
     public String refresh(String token, String refreshToken) {
-        JwtPayload tokenJWT = jwtUtils.parserAccessToken(token);
+        JwtPayload tokenJWT = jwtUtils.parseWithNoVerification(token);
         JwtPayload refreshJWT = jwtUtils.parserRefreshToken(refreshToken);
         if (!tokenJWT.equals(refreshJWT))
             throw ApiException.err(401, "无效refreshToken！");

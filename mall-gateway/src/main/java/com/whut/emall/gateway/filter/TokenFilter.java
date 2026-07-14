@@ -54,6 +54,9 @@ public class TokenFilter implements GlobalFilter,Ordered{
             throw ApiException.err(HttpStatus.UNAUTHORIZED.value(), "Authorization token格式错误");
         }
 
+        if (path.equals("/api/auth/refresh"))
+            return chain.filter(exchange);
+
         JwtPayload payload;
         try {
             payload = jwtUtils.parserAccessToken(token.substring(7));
