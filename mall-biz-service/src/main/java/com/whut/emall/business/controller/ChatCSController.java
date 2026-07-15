@@ -1,6 +1,9 @@
 package com.whut.emall.business.controller;
 
+import java.util.Map;
+
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -9,9 +12,12 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.whut.emall.business.entity.enums.CSStatusStatus;
+import com.whut.emall.business.entity.enums.MessageType;
+import com.whut.emall.business.entity.enums.SenderType;
 import com.whut.emall.business.entity.enums.SessionStatus;
 import com.whut.emall.business.service.ChatService;
 import com.whut.emall.business.vo.CSStatusVO;
+import com.whut.emall.business.vo.ChatMessageVO;
 import com.whut.emall.business.vo.ChatSessionListVO;
 import com.whut.emall.common.entity.ApiResult;
 
@@ -65,6 +71,17 @@ public class ChatCSController {
         return ApiResult.ok("接管成功", chatService.csTakeoverSession(uid, dto.getSessionId()));
     }
 
+    @Operation(summary = "客服发送消息", description = "客服在会话中发送消息")
+    @ApiResponse(responseCode = "200", description = "发送成功")
+    @SecurityRequirement(name = "Authorization")
+    @PostMapping("message")
+    public ApiResult<ChatMessageVO> sendMessage(
+        @Parameter(hidden = true) @RequestHeader("X-User-Id") Integer uid,
+        @RequestBody @Valid CSMessageDTO dto
+    ) {
+        return ApiResult.ok("发送成功", chatService.sendMessage(uid, SenderType.CS, dto.getSessionId(), dto.getContent(), dto.getMsgType(), dto.getExtraData()));
+    }
+
     @Data
     static class CSStatusDTO {
         @NotNull(message = "status 不可为空") CSStatusStatus status;    
@@ -72,5 +89,12 @@ public class ChatCSController {
     @Data
     static class CSTakeoverDTO {
         @NotNull(message = "sessionId 不可为空") Integer sessionId;    
+    }
+    @Data
+    static class CSMessageDTO {
+        @NotNull(message = "sessionId 不可为空") Integer sessionId;
+        @NotNull(message = "content 不可为空") String content;
+        @NotNull(message = "msgType 不可为空") MessageType msgType;
+        Map<String,Object> extraData;
     }
 }

@@ -61,16 +61,20 @@ public class ChatService {
         return sessionMapper.getVOById(session.getId());
     }
 
-    public void sendMessage(Integer userId, Integer sessionId, String content, MessageType msgType, Map<String,Object> extraData) {
+    public ChatMessageVO sendMessage(Integer userId, SenderType senderType, Integer sessionId, String content, MessageType msgType, Map<String,Object> extraData) {
         ChatSession session = sessionMapper.selectById(sessionId);
-        if (session == null || session.getUserId()!=userId)
+        if (session == null)
+            throw ApiException.err(404, "会话不存在");
+        if (senderType == SenderType.USER && session.getUserId()!=userId)
             throw ApiException.err(404, "会话不存在");
         if (session.getStatus() == SessionStatus.FINISHED)
             throw ApiException.err(403, "会话已结束");
+        if (senderType == SenderType.CS && session.getCsId()!=userId)
+            throw ApiException.err(403, "无法回复未接管的会话");
 
         ChatMessage message = new ChatMessage();
         message.setSessionId(sessionId);
-        message.setSenderType(SenderType.USER);
+        message.setSenderType(senderType);
         message.setSenderId(userId);
         message.setContent(content);
         message.setMsgType(msgType);
@@ -78,6 +82,11 @@ public class ChatService {
         
         messageMapper.insert(message);
         sessionMapper.updateById(session);
+
+        if (senderType == SenderType.CS)
+            messageMapper.readAllBySessionId(sessionId);
+
+        return messageMapper.getVOById(message.getId());
     }
 
     public ChatMessageListVO listMessages(Integer userId, Integer pageNum, Integer pageSize, Integer sessionId) {

@@ -5,8 +5,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.whut.emall.business.entity.enums.MessageType;
+import com.whut.emall.business.entity.enums.SenderType;
 import com.whut.emall.business.service.ChatService;
 import com.whut.emall.business.vo.ChatMessageListVO;
+import com.whut.emall.business.vo.ChatMessageVO;
 import com.whut.emall.business.vo.ChatSessionVO;
 import com.whut.emall.common.entity.ApiResult;
 
@@ -52,12 +54,11 @@ public class ChatController {
     @ApiResponse(responseCode = "200", description = "发送成功")
     @SecurityRequirement(name = "Authorization")
     @PostMapping("message")
-    public ApiResult<Void> sendMessage(
+    public ApiResult<ChatMessageVO> sendMessage(
         @Parameter(hidden = true) @RequestHeader("X-User-Id") Integer uid,
         @RequestBody @Valid ChatMessageDTO dto
     ) {
-        chatService.sendMessage(uid, dto.getSessionId(), dto.getContent(), dto.getMsgType(), dto.getExtraData());
-        return ApiResult.ok("发送成功");
+        return ApiResult.ok("发送成功", chatService.sendMessage(uid, SenderType.USER, dto.getSessionId(), dto.getContent(), dto.getMsgType(), dto.getExtraData()));
     }
 
     @Operation(summary = "获取消息列表", description = "获取当前会话的所有消息")
