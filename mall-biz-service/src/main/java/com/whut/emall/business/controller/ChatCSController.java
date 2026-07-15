@@ -18,6 +18,7 @@ import com.whut.emall.business.entity.enums.SessionStatus;
 import com.whut.emall.business.service.ChatService;
 import com.whut.emall.business.vo.AISuggestVO;
 import com.whut.emall.business.vo.CSStatusVO;
+import com.whut.emall.business.vo.ChatMessageListVO;
 import com.whut.emall.business.vo.ChatMessageVO;
 import com.whut.emall.business.vo.ChatSessionListVO;
 import com.whut.emall.business.vo.ChatSessionVO;
@@ -30,6 +31,7 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.Resource;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
@@ -117,6 +119,18 @@ public class ChatCSController {
         return ApiResult.ok("会话已结束");
     }
 
+    @Operation(summary = "获取消息列表", description = "获取指定会话的所有消息（客服端）")
+    @ApiResponse(responseCode = "200", description = "获取成功")
+    @SecurityRequirement(name = "Authorization")
+    @GetMapping("messages")
+    public ApiResult<ChatMessageListVO> listMessage(
+        @Valid @NotNull(message = "sessionId 不可为空")Integer sessionId,
+        @RequestParam(required = false, defaultValue = "1") Integer pageNum,
+        @RequestParam(required = false, defaultValue = "20") Integer pageSize
+    ) {
+        return ApiResult.ok("获取成功", chatService.listMessages(null, pageNum, pageSize, sessionId));
+    }
+
     @Data
     static class CSStatusDTO {
         @NotNull(message = "status 不可为空") CSStatusStatus status;    
@@ -128,14 +142,14 @@ public class ChatCSController {
     @Data
     static class CSMessageDTO {
         @NotNull(message = "sessionId 不可为空") Integer sessionId;
-        @NotNull(message = "content 不可为空") String content;
+        @NotBlank(message = "content 不可为空") String content;
         @NotNull(message = "msgType 不可为空") MessageType msgType;
         Map<String,Object> extraData;
     }
     @Data
     static class CSAISuggestDTO {
         @NotNull(message = "sessionId 不可为空") Integer sessionId;
-        @NotNull(message = "userQuestion 不可为空") String userQuestion;
+        @NotBlank(message = "userQuestion 不可为空") String userQuestion;
     }
     @Data
     static class CSAIModeDTO {

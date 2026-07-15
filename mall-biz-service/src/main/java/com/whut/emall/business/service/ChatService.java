@@ -93,7 +93,7 @@ public class ChatService {
 
     public ChatMessageListVO listMessages(Integer userId, Integer pageNum, Integer pageSize, Integer sessionId) {
         ChatSession session = sessionMapper.selectById(sessionId);
-        if (session == null || session.getUserId()!=userId)
+        if (session == null || (userId!=null && session.getUserId()!=userId))
             throw ApiException.err(404, "会话不存在");
         
         Page<ChatMessageVO> page = new Page<>(pageNum, pageSize);
