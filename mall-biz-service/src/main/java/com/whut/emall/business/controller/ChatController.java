@@ -25,6 +25,7 @@ import java.util.Map;
 
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 
@@ -72,6 +73,29 @@ public class ChatController {
         return ApiResult.ok("获取成功", chatService.listMessages(uid, pageNum, pageSize, sessionId));
     }
 
+    @Operation(summary = "获取会话状态", description = "获取当前会话的实时状态（用于轮询检测客服是否回复）")
+    @ApiResponse(responseCode = "200", description = "获取成功")
+    @SecurityRequirement(name = "Authorization")
+    @GetMapping("status")
+    public ApiResult<ChatSessionVO> getSessionStatus(
+        @Parameter(hidden = true) @RequestHeader("X-User-Id") Integer uid,
+        Integer sessionId
+    ) {
+        return ApiResult.ok("获取成功", chatService.getSessionStatus(uid, sessionId));
+    }
+
+    @Operation(summary = "结束会话", description = "用户主动结束当前会话")
+    @ApiResponse(responseCode = "200", description = "会话已结束")
+    @SecurityRequirement(name = "Authorization")
+    @PutMapping("end")
+    public ApiResult<Void> endSession(
+        @Parameter(hidden = true) @RequestHeader("X-User-Id") Integer uid,
+        @RequestBody @Valid ChatEndDTO dto
+    ) {
+        chatService.endSession(uid, dto.getSessionId());
+        return ApiResult.ok("会话已结束");
+    }
+
     @Data
     static class ChatStartDTO {
         @NotBlank(message = "source不可为空") String source;
@@ -84,5 +108,9 @@ public class ChatController {
         @NotBlank(message = "content不可为空") String content;
         @NotNull(message = "msgType不可为空") MessageType msgType;
         Map<String,Object> extraData;
+    }
+    @Data
+    static class ChatEndDTO {
+        @NotNull(message = "sessionId不可为空") Integer sessionId;
     }
 }

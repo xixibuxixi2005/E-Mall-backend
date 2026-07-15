@@ -1,5 +1,6 @@
 package com.whut.emall.business.service;
 
+import java.sql.Timestamp;
 import java.util.Map;
 
 import org.springframework.stereotype.Service;
@@ -10,6 +11,7 @@ import com.whut.emall.business.entity.ChatMessage;
 import com.whut.emall.business.entity.ChatSession;
 import com.whut.emall.business.entity.enums.MessageType;
 import com.whut.emall.business.entity.enums.SenderType;
+import com.whut.emall.business.entity.enums.SessionStatus;
 import com.whut.emall.business.mapper.ChatMessageMapper;
 import com.whut.emall.business.mapper.ChatSessionMapper;
 import com.whut.emall.business.vo.ChatMessageListVO;
@@ -35,7 +37,7 @@ public class ChatService {
         session.setSourceId(sourceId);
         session.setFirstMessage(firstMessage);
 
-        // 分配客服
+        // TODO: 分配客服
 
         sessionMapper.insert(session);
 
@@ -55,6 +57,8 @@ public class ChatService {
         ChatSession session = sessionMapper.selectById(sessionId);
         if (session == null || session.getUserId()!=userId)
             throw ApiException.err(404, "会话不存在");
+        if (session.getStatus() == SessionStatus.FINISHED)
+            throw ApiException.err(403, "会话已结束");
 
         ChatMessage message = new ChatMessage();
         message.setSessionId(sessionId);
@@ -76,5 +80,23 @@ public class ChatService {
         Page<ChatMessageVO> page = new Page<>(pageNum, pageSize);
         page = messageMapper.getVOsBySessionId(page, sessionId);
         return new ChatMessageListVO(page);
+    }
+
+    public ChatSessionVO getSessionStatus(Integer userId, Integer sessionId) {
+        ChatSessionVO vo = sessionMapper.getVOById(sessionId);
+        if (vo == null || vo.getUserId()!=userId)
+            throw ApiException.err(404, "会话不存在");
+        
+        return vo;
+    }
+
+    public void endSession(Integer userId, Integer sessionId) {
+        ChatSession session = sessionMapper.selectById(sessionId);
+        if (session == null || session.getUserId()!=userId)
+            throw ApiException.err(404, "会话不存在");
+        
+        session.setStatus(SessionStatus.FINISHED);
+        session.setEndTime(new Timestamp(System.currentTimeMillis()));
+        sessionMapper.updateById(session);
     }
 }
