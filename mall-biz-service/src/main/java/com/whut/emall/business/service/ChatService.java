@@ -1,6 +1,7 @@
 package com.whut.emall.business.service;
 
 import java.sql.Timestamp;
+import java.util.Arrays;
 import java.util.Map;
 
 import org.springframework.stereotype.Service;
@@ -19,6 +20,7 @@ import com.whut.emall.business.entity.enums.SessionStatus;
 import com.whut.emall.business.mapper.CSStatusMapper;
 import com.whut.emall.business.mapper.ChatMessageMapper;
 import com.whut.emall.business.mapper.ChatSessionMapper;
+import com.whut.emall.business.vo.AISuggestVO;
 import com.whut.emall.business.vo.CSStatusVO;
 import com.whut.emall.business.vo.ChatMessageListVO;
 import com.whut.emall.business.vo.ChatMessageVO;
@@ -172,5 +174,65 @@ public class ChatService {
         statusMapper.updateById(csStatus);
 
         return statusMapper.getVOByCsId(csId);
+    }
+
+    public AISuggestVO csAiSuggest(Integer csId, Integer sessionId, String userQuestion) {
+        AISuggestVO suggestVO = new AISuggestVO();
+        // TODO: 使用RAG实现建议接口
+        suggestVO.setSuggestions(Arrays.asList("未实现建议接口"));
+        return null;
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    public ChatSessionVO csAiMode(Integer sessionId, Boolean aiMode) {
+        ChatSession session = sessionMapper.selectById(sessionId);
+        if (session == null)
+            throw ApiException.err(404, "会话不存在");
+        if (aiMode) {
+            session.setMode(SessionMode.AI);
+            Integer csId = session.getCsId();
+            if (csId != null) {
+                CSStatus csStatus = getCSStatusByCsId(csId);
+                csStatus.setCurrentCount(csStatus.getCurrentCount() - 1);
+                statusMapper.updateById(csStatus);
+            }
+        } else {
+            session.setMode(SessionMode.CS);
+            Integer csId = session.getCsId();
+            if (csId != null) {
+                CSStatus csStatus = getCSStatusByCsId(csId);
+                if (csStatus.getStatus() == CSStatusStatus.OFFLINE)
+                    throw ApiException.err(403, "客服不在线，无法切换至客服模式");
+                if (csStatus.getStatus() == CSStatusStatus.BUSY)
+                    throw ApiException.err(403, "客服正在服务其他会话，无法切换至客服模式");
+                csStatus.setCurrentCount(csStatus.getCurrentCount() + 1);
+                statusMapper.updateById(csStatus);
+            }
+        }
+        sessionMapper.updateById(session);
+        // TODO: 使用RAG实现对话接口
+        return sessionMapper.getVOById(sessionId);
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    public void csEndSession(Integer csId, Integer sessionId, String summary) {
+        ChatSession session = sessionMapper.selectById(sessionId);
+        if (session == null)
+            throw ApiException.err(404, "会话不存在");
+        if (session.getCsId() == null || !session.getCsId().equals(csId))
+            throw ApiException.err(403, "无法结束未接管的会话");
+        if (session.getStatus() == SessionStatus.FINISHED)
+            return;
+
+        if (session.getMode() == SessionMode.CS) {
+            CSStatus csStatus = getCSStatusByCsId(csId);
+            csStatus.setCurrentCount(csStatus.getCurrentCount() - 1);
+            statusMapper.updateById(csStatus);
+        }
+
+        session.setStatus(SessionStatus.FINISHED);
+        session.setEndTime(new Timestamp(System.currentTimeMillis()));
+        // session.setSummary(summary); // TODO: 结束会话时，客服可以填写总结
+        sessionMapper.updateById(session);
     }
 }

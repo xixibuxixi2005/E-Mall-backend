@@ -16,9 +16,11 @@ import com.whut.emall.business.entity.enums.MessageType;
 import com.whut.emall.business.entity.enums.SenderType;
 import com.whut.emall.business.entity.enums.SessionStatus;
 import com.whut.emall.business.service.ChatService;
+import com.whut.emall.business.vo.AISuggestVO;
 import com.whut.emall.business.vo.CSStatusVO;
 import com.whut.emall.business.vo.ChatMessageVO;
 import com.whut.emall.business.vo.ChatSessionListVO;
+import com.whut.emall.business.vo.ChatSessionVO;
 import com.whut.emall.common.entity.ApiResult;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -82,6 +84,39 @@ public class ChatCSController {
         return ApiResult.ok("发送成功", chatService.sendMessage(uid, SenderType.CS, dto.getSessionId(), dto.getContent(), dto.getMsgType(), dto.getExtraData()));
     }
 
+    @Operation(summary = "AI 辅助回复建议（未实现）", description = "客服输入问题时，AI 生成回复建议（非流式，快速返回）")
+    @ApiResponse(responseCode = "200", description = "生成成功")
+    @SecurityRequirement(name = "Authorization")
+    @PostMapping("ai-suggest")
+    public ApiResult<AISuggestVO> aiSuggest(
+        @Parameter(hidden = true) @RequestHeader("X-User-Id") Integer uid,
+        @RequestBody @Valid CSAISuggestDTO dto
+    ) {
+        return ApiResult.ok("生成成功", chatService.csAiSuggest(uid, dto.getSessionId(), dto.getUserQuestion()));
+    }
+
+    @Operation(summary = "切换 AI 托管模式（未实现）", description = "客服将会话切换至 AI 自动回复模式（用于下班后或繁忙时）")
+    @ApiResponse(responseCode = "200", description = "生成成功")
+    @SecurityRequirement(name = "Authorization")
+    @PutMapping("ai-mode")
+    public ApiResult<ChatSessionVO> setAiMode(
+        @RequestBody @Valid CSAIModeDTO dto
+    ) {
+        return ApiResult.ok("生成成功", chatService.csAiMode(dto.getSessionId(), dto.getAiMode()));
+    }
+
+    @Operation(summary = "结束会话（客服结束）", description = "客服结束当前会话")
+    @ApiResponse(responseCode = "200", description = "会话已结束")
+    @SecurityRequirement(name = "Authorization")
+    @PutMapping("end")
+    public ApiResult<Void> endSession(
+        @Parameter(hidden = true) @RequestHeader("X-User-Id") Integer uid,
+        @RequestBody @Valid CSAIEndDTO dto
+    ) {
+        chatService.csEndSession(uid, dto.getSessionId(), dto.getSummary());
+        return ApiResult.ok("会话已结束");
+    }
+
     @Data
     static class CSStatusDTO {
         @NotNull(message = "status 不可为空") CSStatusStatus status;    
@@ -96,5 +131,20 @@ public class ChatCSController {
         @NotNull(message = "content 不可为空") String content;
         @NotNull(message = "msgType 不可为空") MessageType msgType;
         Map<String,Object> extraData;
+    }
+    @Data
+    static class CSAISuggestDTO {
+        @NotNull(message = "sessionId 不可为空") Integer sessionId;
+        @NotNull(message = "userQuestion 不可为空") String userQuestion;
+    }
+    @Data
+    static class CSAIModeDTO {
+        @NotNull(message = "sessionId 不可为空") Integer sessionId;
+        @NotNull(message = "aiMode 不可为空") Boolean aiMode;
+    }
+    @Data
+    static class CSAIEndDTO {
+        @NotNull(message = "sessionId 不可为空") Integer sessionId;
+        String summary;
     }
 }
