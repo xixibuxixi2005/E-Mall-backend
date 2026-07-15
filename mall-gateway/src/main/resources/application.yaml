@@ -18,7 +18,7 @@ spring:
       - id: mall-biz-service
         uri: lb://mall-biz-service
         predicates:
-          - Path=/api/biz/**, /api/auth/**, /api/admin/**
+          - Path=/api/biz/**, /api/auth/**, /api/admin/**, /api/chat/**
 
 knife4j:
   gateway:
