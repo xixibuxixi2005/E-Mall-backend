@@ -14,6 +14,7 @@ import com.whut.emall.business.entity.ChatSession;
 import com.whut.emall.business.entity.enums.CSStatusStatus;
 import com.whut.emall.business.entity.enums.MessageType;
 import com.whut.emall.business.entity.enums.SenderType;
+import com.whut.emall.business.entity.enums.SessionMode;
 import com.whut.emall.business.entity.enums.SessionStatus;
 import com.whut.emall.business.mapper.CSStatusMapper;
 import com.whut.emall.business.mapper.ChatMessageMapper;
@@ -97,11 +98,20 @@ public class ChatService {
         return vo;
     }
 
+    @Transactional(rollbackFor = Exception.class)
     public void endSession(Integer userId, Integer sessionId) {
         ChatSession session = sessionMapper.selectById(sessionId);
         if (session == null || session.getUserId()!=userId)
             throw ApiException.err(404, "会话不存在");
+        if (session.getStatus()==SessionStatus.FINISHED)
+            return;
         
+        CSStatus csStatus = getCSStatusByCsId(session.getCsId());
+        if (csStatus != null) {
+            csStatus.setCurrentCount(csStatus.getCurrentCount() - 1);
+            statusMapper.updateById(csStatus);
+        } 
+
         session.setStatus(SessionStatus.FINISHED);
         session.setEndTime(new Timestamp(System.currentTimeMillis()));
         sessionMapper.updateById(session);
@@ -128,5 +138,30 @@ public class ChatService {
     public ChatSessionListVO csListSessions(SessionStatus status, Integer pageNum, Integer pageSize) {
         Page<ChatSessionVO> page = new Page<>(pageNum, pageSize);
         return new ChatSessionListVO(sessionMapper.getVOs(page, status));
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    public CSStatusVO csTakeoverSession(Integer csId, Integer sessionId) {
+        ChatSession session = sessionMapper.selectById(sessionId);
+        if (session == null)
+            throw ApiException.err(404, "会话不存在");
+        if (session.getStatus() != SessionStatus.WAITING)
+            throw ApiException.err(403, "会话不在排队中，无法接管");
+
+        CSStatus csStatus = getCSStatusByCsId(csId);
+        if (csStatus == null || csStatus.getStatus() != CSStatusStatus.ONLINE)
+            throw ApiException.err(403, "客服不在线，无法接管会话");
+        if (csStatus.getStatus() == CSStatusStatus.BUSY)
+            throw ApiException.err(403, "客服正在服务其他会话，无法接管会话");
+
+        session.setCsId(csId);
+        session.setStatus(SessionStatus.SERVING);
+        session.setMode(SessionMode.CS);
+        sessionMapper.updateById(session);
+
+        csStatus.setCurrentCount(csStatus.getCurrentCount() + 1);
+        statusMapper.updateById(csStatus);
+
+        return statusMapper.getVOByCsId(csId);
     }
 }

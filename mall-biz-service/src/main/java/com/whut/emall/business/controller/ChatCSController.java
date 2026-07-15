@@ -54,8 +54,23 @@ public class ChatCSController {
         return ApiResult.ok("获取成功", chatService.csListSessions(status, pageNum, pageSize));
     }
 
+    @Operation(summary = "接管会话", description = "客服接管排队中的会话")
+    @ApiResponse(responseCode = "200", description = "接管成功")
+    @SecurityRequirement(name = "Authorization")
+    @PutMapping("takeover")
+    public ApiResult<CSStatusVO> takeoverSession(
+        @Parameter(hidden = true) @RequestHeader("X-User-Id") Integer uid,
+        @RequestBody @Valid CSTakeoverDTO dto
+    ) {
+        return ApiResult.ok("接管成功", chatService.csTakeoverSession(uid, dto.getSessionId()));
+    }
+
     @Data
     static class CSStatusDTO {
         @NotNull(message = "status 不可为空") CSStatusStatus status;    
+    }
+    @Data
+    static class CSTakeoverDTO {
+        @NotNull(message = "sessionId 不可为空") Integer sessionId;    
     }
 }
