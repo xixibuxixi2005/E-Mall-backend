@@ -2,7 +2,7 @@ package com.whut.emall.common.config;
 
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.validation.BindException;
-import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.ErrorResponseException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
@@ -18,11 +18,6 @@ public class GlobalExceptionHandler{
     @ExceptionHandler(ApiException.class)
     public ApiResult<?> handleApiException(ApiException err) {
         return err.toResult();
-    }
-
-    @ExceptionHandler({MethodArgumentNotValidException.class})
-    public ApiResult<?> handleValidationException(MethodArgumentNotValidException err) {
-        return ApiException.err(400, "请求参数校验失败: " + err.getBindingResult().getFieldError().getDefaultMessage()).toResult();
     }
 
     @ExceptionHandler(BindException.class)
@@ -43,6 +38,11 @@ public class GlobalExceptionHandler{
     @ExceptionHandler(NoResourceFoundException.class)
     public ApiResult<?> handleNoResourceFoundException(NoResourceFoundException err) {
         return ApiException.err(404, "无效的请求路径: " + err.getResourcePath()).toResult();
+    }
+
+    @ExceptionHandler({ErrorResponseException.class})
+    public ApiResult<?> handleErrorResponseException(ErrorResponseException err) {
+        return ApiException.err(err.getStatusCode().value(), "请求失败: " + err.getLocalizedMessage()).toResult();
     }
 
     @ExceptionHandler(Exception.class)
