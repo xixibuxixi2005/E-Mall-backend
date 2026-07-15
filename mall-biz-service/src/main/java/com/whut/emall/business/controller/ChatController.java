@@ -32,7 +32,7 @@ import org.springframework.web.bind.annotation.RequestHeader;
 
 @RestController
 @RequestMapping("/chat")
-@Tag(name = "客服咨询接口", description = "用于会员和客户之间咨询聊天的模块")
+@Tag(name = "客服咨询接口（用户端）", description = "用于会员和客户之间咨询聊天的模块")
 public class ChatController {
     @Resource ChatService chatService;
 

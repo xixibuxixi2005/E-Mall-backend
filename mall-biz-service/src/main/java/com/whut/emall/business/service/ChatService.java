@@ -6,14 +6,19 @@ import java.util.Map;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.whut.emall.business.entity.CSStatus;
 import com.whut.emall.business.entity.ChatMessage;
 import com.whut.emall.business.entity.ChatSession;
+import com.whut.emall.business.entity.enums.CSStatusStatus;
 import com.whut.emall.business.entity.enums.MessageType;
 import com.whut.emall.business.entity.enums.SenderType;
 import com.whut.emall.business.entity.enums.SessionStatus;
+import com.whut.emall.business.mapper.CSStatusMapper;
 import com.whut.emall.business.mapper.ChatMessageMapper;
 import com.whut.emall.business.mapper.ChatSessionMapper;
+import com.whut.emall.business.vo.CSStatusVO;
 import com.whut.emall.business.vo.ChatMessageListVO;
 import com.whut.emall.business.vo.ChatMessageVO;
 import com.whut.emall.business.vo.ChatSessionVO;
@@ -26,6 +31,7 @@ import jakarta.annotation.Resource;
 public class ChatService {
     @Resource ChatSessionMapper sessionMapper;
     @Resource ChatMessageMapper messageMapper;
+    @Resource CSStatusMapper statusMapper;
     @Resource UniqueRamdom uniqueRamdom;
 
     @Transactional(rollbackFor = Exception.class)
@@ -98,5 +104,20 @@ public class ChatService {
         session.setStatus(SessionStatus.FINISHED);
         session.setEndTime(new Timestamp(System.currentTimeMillis()));
         sessionMapper.updateById(session);
+    }
+
+    private CSStatus getCSStatusByCsId(Integer csId) {
+        LambdaQueryWrapper<CSStatus> wrapper = new LambdaQueryWrapper<>();
+        wrapper.eq(CSStatus::getCsId, csId);
+        return statusMapper.selectOne(wrapper);
+    }
+    public CSStatusVO csSetStatus(Integer userId, CSStatusStatus status) {
+        CSStatus csStatus = getCSStatusByCsId(userId);
+        if (csStatus == null)
+            throw ApiException.err(404, "客服不存在");
+        csStatus.setStatus(status);
+
+        statusMapper.updateById(csStatus);
+        return statusMapper.getVOByCsId(userId);
     }
 }

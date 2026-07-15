@@ -1,0 +1,45 @@
+package com.whut.emall.business.controller;
+
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.whut.emall.business.entity.enums.CSStatusStatus;
+import com.whut.emall.business.service.ChatService;
+import com.whut.emall.business.vo.CSStatusVO;
+import com.whut.emall.common.entity.ApiResult;
+
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.annotation.Resource;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
+import lombok.Data;
+
+@RestController
+@RequestMapping("/chat/cs")
+@Tag(name = "客服咨询接口（客服端）", description = "用于会员和客户之间咨询聊天的模块")
+public class ChatCSController {
+    @Resource ChatService chatService;
+
+    @Operation(summary = "切换在线状态（上下班）", description = "客服切换在线/离线/忙碌状态")
+    @ApiResponse(responseCode = "200", description = "状态切换成功")
+    @SecurityRequirement(name = "Authorization")
+    @PutMapping("/status")
+    public ApiResult<CSStatusVO> changeStatus(
+        @Parameter(hidden = true) @RequestHeader("X-User-Id") Integer uid,
+        @RequestBody @Valid CSStatusDTO dto
+    ) {
+        return ApiResult.ok("状态切换成功", chatService.csSetStatus(uid, dto.getStatus()));
+    }
+
+    @Data
+    static class CSStatusDTO {
+        @NotNull(message = "status 不可为空") CSStatusStatus status;    
+    }
+}
