@@ -21,6 +21,7 @@ import com.whut.emall.business.mapper.ChatSessionMapper;
 import com.whut.emall.business.vo.CSStatusVO;
 import com.whut.emall.business.vo.ChatMessageListVO;
 import com.whut.emall.business.vo.ChatMessageVO;
+import com.whut.emall.business.vo.ChatSessionListVO;
 import com.whut.emall.business.vo.ChatSessionVO;
 import com.whut.emall.common.entity.ApiException;
 import com.whut.emall.common.utils.UniqueRamdom;
@@ -111,6 +112,9 @@ public class ChatService {
         wrapper.eq(CSStatus::getCsId, csId);
         return statusMapper.selectOne(wrapper);
     }
+
+
+
     public CSStatusVO csSetStatus(Integer userId, CSStatusStatus status) {
         CSStatus csStatus = getCSStatusByCsId(userId);
         if (csStatus == null)
@@ -119,5 +123,10 @@ public class ChatService {
 
         statusMapper.updateById(csStatus);
         return statusMapper.getVOByCsId(userId);
+    }
+
+    public ChatSessionListVO csListSessions(SessionStatus status, Integer pageNum, Integer pageSize) {
+        Page<ChatSessionVO> page = new Page<>(pageNum, pageSize);
+        return new ChatSessionListVO(sessionMapper.getVOs(page, status));
     }
 }

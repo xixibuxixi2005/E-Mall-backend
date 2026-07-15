@@ -1,14 +1,18 @@
 package com.whut.emall.business.controller;
 
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.whut.emall.business.entity.enums.CSStatusStatus;
+import com.whut.emall.business.entity.enums.SessionStatus;
 import com.whut.emall.business.service.ChatService;
 import com.whut.emall.business.vo.CSStatusVO;
+import com.whut.emall.business.vo.ChatSessionListVO;
 import com.whut.emall.common.entity.ApiResult;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -30,12 +34,24 @@ public class ChatCSController {
     @Operation(summary = "切换在线状态（上下班）", description = "客服切换在线/离线/忙碌状态")
     @ApiResponse(responseCode = "200", description = "状态切换成功")
     @SecurityRequirement(name = "Authorization")
-    @PutMapping("/status")
+    @PutMapping("status")
     public ApiResult<CSStatusVO> changeStatus(
         @Parameter(hidden = true) @RequestHeader("X-User-Id") Integer uid,
         @RequestBody @Valid CSStatusDTO dto
     ) {
         return ApiResult.ok("状态切换成功", chatService.csSetStatus(uid, dto.getStatus()));
+    }
+
+    @Operation(summary = "获取待服务会话列表", description = "获取所有待服务/进行中的会话列表（排队中 + 服务中）")
+    @ApiResponse(responseCode = "200", description = "获取成功")
+    @SecurityRequirement(name = "Authorization")
+    @GetMapping("sessions")
+    public ApiResult<ChatSessionListVO> listSessions(
+        @RequestParam(required = false) SessionStatus status,
+        @RequestParam(required = false, defaultValue = "1") Integer pageNum,
+        @RequestParam(required = false, defaultValue = "20") Integer pageSize
+    ) {
+        return ApiResult.ok("获取成功", chatService.csListSessions(status, pageNum, pageSize));
     }
 
     @Data
