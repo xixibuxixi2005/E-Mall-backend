@@ -38,14 +38,13 @@ public class KnowledgeController {
     static final Set<String> SUPPORTED_MIME_TYPES = new HashSet<>(Arrays.asList(
             MediaType.APPLICATION_PDF_VALUE,    // application/pdf
             "application/vnd.openxmlformats-officedocument.wordprocessingml.document", // docx
-            "application/msword",
             MediaType.TEXT_PLAIN_VALUE, // text/plain
             "text/markdown",            // md 常见
             "text/x-markdown",          // md 另一种
             "text/x-md"                 // 少数情况
     ));
 
-    @Operation(summary = "知识文档上传（未实现向量化）", description = "支持PDF/DOCX/TXT/MD格式文档上传，存入向量数据库")
+    @Operation(summary = "知识文档上传", description = "支持PDF/DOCX/TXT/MD格式文档上传，存入向量数据库")
     @ApiResponse(responseCode = "200", description = "文档上传并向量化成功")
     @SecurityRequirement(name = "Authorization")
     @PostMapping("upload")
@@ -57,9 +56,7 @@ public class KnowledgeController {
     ) {
         if (file.getContentType() == null || !SUPPORTED_MIME_TYPES.contains(file.getContentType()))
             throw ApiException.err(400, "不支持的文件类型，请上传PDF/DOCX/TXT/MD格式文档");
-        // TODO:
-        // return ApiResult.ok("文档上传并向量化成功", knowledgeService.uploadDoc(file, productId, category, title));
-        return new ApiResult<>(501, "文件已上传，但是未实现向量化", knowledgeService.uploadDoc(file, productId, category, title));
+        return ApiResult.ok("文档上传并向量化成功", knowledgeService.uploadDoc(file, productId, category, title));
     }
     
     @Operation(summary = "知识文档删除", description = "删除已上传的知识文档")

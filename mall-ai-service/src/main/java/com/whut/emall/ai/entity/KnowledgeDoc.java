@@ -13,7 +13,7 @@ public class KnowledgeDoc {
     String title;
     String category;
     Integer productId;
-    String uuid;
+    String fileName;
     String fileType;
     Integer status;
     Integer chunkCount;

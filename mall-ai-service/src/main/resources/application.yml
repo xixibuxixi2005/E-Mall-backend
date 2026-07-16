@@ -26,6 +26,17 @@ spring:
         options:
           model: deepseek-v4-flash 
           temperature: 0.8
+      embedding:
+        base-url: https://api.siliconflow.cn
+        api-key: ${SF_KEY}
+        options:
+          model: BAAI/bge-m3
+    vectorstore:
+      milvus:
+        initialize-schema: true
+        embedding-dimension: 1024
+        client:
+          host: 127.0.0.1
 
 mybatis-plus:
   configuration:
