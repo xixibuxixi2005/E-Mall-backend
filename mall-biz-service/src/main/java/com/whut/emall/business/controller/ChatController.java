@@ -9,6 +9,7 @@ import com.whut.emall.business.entity.enums.SenderType;
 import com.whut.emall.business.service.ChatService;
 import com.whut.emall.business.vo.ChatMessageListVO;
 import com.whut.emall.business.vo.ChatMessageVO;
+import com.whut.emall.business.vo.ChatSessionListVO;
 import com.whut.emall.business.vo.ChatSessionVO;
 import com.whut.emall.common.entity.ApiResult;
 
@@ -48,6 +49,18 @@ public class ChatController {
     ) {
         var vo = chatService.startChat(uid, dto.getSource(), dto.getSourceId(), dto.getFirstMessage());
         return ApiResult.ok("会话创建成功", vo);
+    }
+
+    @Operation(summary = "获取会话列表", description = "获取用户发起的会话列表")
+    @ApiResponse(responseCode = "200", description = "获取成功")
+    @SecurityRequirement(name = "Authorization")
+    @GetMapping("my-sessions")
+    public ApiResult<ChatSessionListVO> mySessions(
+        @Parameter(hidden = true) @RequestHeader("X-User-Id") Integer uid,
+        @RequestParam(required = false, defaultValue = "1") Integer pageNum,
+        @RequestParam(required = false, defaultValue = "20") Integer pageSize
+    ) {
+        return ApiResult.ok("获取成功", chatService.listSessions(uid, pageNum, pageSize));
     }
 
     @Operation(summary = "用户发送消息", description = "用户在会话中发送消息，根据模式决定走真人客服还是 AI 自动回复")

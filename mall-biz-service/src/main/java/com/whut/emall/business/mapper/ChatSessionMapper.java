@@ -39,9 +39,10 @@ public interface ChatSessionMapper extends BaseMapper<ChatSession>{
         <where>
             <if test="status != null">AND cs.status=#{status}</if>
             <if test="status == null">AND (cs.status=0 or cs.status=1)</if>
+            <if test="userId != null">AND cs.user_id=#{userId}</if>
         </where>
         ORDER BY cs.create_time
         </script>
     """)
-    Page<ChatSessionVO> getVOs(Page<?> page, SessionStatus status);
+    Page<ChatSessionVO> getVOs(Page<?> page, Integer userId, SessionStatus status);
 }

@@ -101,6 +101,11 @@ public class ChatService {
         return new ChatMessageListVO(page);
     }
 
+    public ChatSessionListVO listSessions(Integer userId, Integer pageNum, Integer pageSize) {
+        Page<ChatSessionVO> page = new Page<>(pageNum, pageSize);
+        return new ChatSessionListVO(sessionMapper.getVOs(page, userId, null));
+    }
+
     public ChatSessionVO getSessionStatus(Integer userId, Integer sessionId) {
         ChatSessionVO vo = sessionMapper.getVOById(sessionId);
         if (vo == null || vo.getUserId()!=userId)
@@ -148,7 +153,7 @@ public class ChatService {
 
     public ChatSessionListVO csListSessions(SessionStatus status, Integer pageNum, Integer pageSize) {
         Page<ChatSessionVO> page = new Page<>(pageNum, pageSize);
-        return new ChatSessionListVO(sessionMapper.getVOs(page, status));
+        return new ChatSessionListVO(sessionMapper.getVOs(page, null, status));
     }
 
     @Transactional(rollbackFor = Exception.class)
@@ -160,7 +165,7 @@ public class ChatService {
             throw ApiException.err(403, "会话不在排队中，无法接管");
 
         CSStatus csStatus = getCSStatusByCsId(csId);
-        if (csStatus == null || csStatus.getStatus() != CSStatusStatus.ONLINE)
+        if (csStatus == null || csStatus.getStatus() == CSStatusStatus.OFFLINE)
             throw ApiException.err(403, "客服不在线，无法接管会话");
         if (csStatus.getStatus() == CSStatusStatus.BUSY)
             throw ApiException.err(403, "客服正在服务其他会话，无法接管会话");
