@@ -1,130 +1,125 @@
 package com.whut.emall.ai.service;
 
-import java.math.BigDecimal;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.springframework.stereotype.Service;
 
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.whut.emall.ai.client.BizClient;
-import com.whut.emall.ai.mapper.OrderItemMapper;
 import com.whut.emall.ai.vo.ChurnPredictionVO;
 import com.whut.emall.ai.vo.InventoryPredictionVO;
 import com.whut.emall.ai.vo.UserProfileVO;
-import com.whut.emall.common.entity.OrderItem;
-import com.whut.emall.common.entity.enums.MemberLevel;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.whut.emall.ai.tools.AITools;
+import com.whut.emall.common.vo.CartListVO;
 import com.whut.emall.common.vo.MemberInfo;
 import com.whut.emall.common.vo.OrderDetailListVO;
-import com.whut.emall.common.vo.OrderDetailVO;
 import com.whut.emall.common.vo.ProductDetailVO;
 
 import jakarta.annotation.Resource;
 
 @Service
 public class PredictService {
-    @Resource BizClient bizClient;
-    @Resource OrderItemMapper orderItemMapper;
+    @Resource LLMService llmService;
+    @Resource AITools aiTools;
+    final ObjectMapper objectMapper = new ObjectMapper();
 
     public InventoryPredictionVO predictInventory(Integer productId, Integer days) {
-        days = Math.max(1, days);
-        //获取商品详情
-        ProductDetailVO product = bizClient.getProductDetail(productId).getData();
-
-        //历史销售数据
-        LocalDate endDate = LocalDate.now().minusDays(1);
-        LocalDate startDate = endDate.minusDays(30);
-        List<OrderItem> history = orderItemMapper.selectList(new LambdaQueryWrapper<OrderItem>()
-            .eq(OrderItem::getProductId, productId)
-            .ge(OrderItem::getCreateTime, startDate)
-            .le(OrderItem::getCreateTime, endDate));
-        
-        //计算每日销量
-        Map<LocalDate, Integer> dailySales = new HashMap<>();
-        for (OrderItem orderItem : history) {
-            dailySales.merge(orderItem.getCreateTime().toLocalDateTime().toLocalDate(), orderItem.getQuantity(), Integer::sum);
+        int forecastDays = days == null ? 7 : Math.max(1, days);
+        ProductDetailVO product = aiTools.getProductDetail(productId);
+        if (product == null) {
+            throw new RuntimeException("商品不存在");
         }
 
-        // 简单预测：计算日均销量 * 天数 + 安全库存
-        int totalSales = dailySales.values().stream().mapToInt(Integer::intValue).sum();
-        double avgDaily = dailySales.isEmpty() ? 1.0 : (double) totalSales / dailySales.size();
-        int predictedSales = (int) Math.ceil(avgDaily * days);
-        int currentStock = product.getStock();
-        int suggestedRestock = Math.max(0, predictedSales + 10 - currentStock);
+        String systemPrompt = "你是电商库存预测AI。请结合商品信息、商品列表、分类信息与用户历史订单趋势，输出库存预测结果。"
+            + "要求："
+            + "1) predictedSales 为未来指定天数的预测总销量；"
+            + "2) currentStock 为当前库存；"
+            + "3) suggestedRestock 为建议补货量；"
+            + "4) confidenceInterval 为长度2的数组，表示保守与乐观预测区间；"
+            + "5) forecast 为按天输出的销售趋势；"
+            + "6) 保持 JSON 结构稳定。";
+        String question = "商品ID=" + productId + ", 预测天数=" + forecastDays;
 
-        //生成预测
-        List<InventoryPredictionVO.DailyForecast> forecast = new ArrayList<>();
-        for (int i = 1; i <= days; i++) {
-            InventoryPredictionVO.DailyForecast daily = new InventoryPredictionVO.DailyForecast();
-            daily.setDate(LocalDate.now().plusDays(i).format(DateTimeFormatter.ISO_LOCAL_DATE));
-            daily.setSales(String.valueOf((int) Math.ceil(avgDaily)));
-            forecast.add(daily);
+        InventoryPredictionVO result = llmService.customPromptStructCall(
+            systemPrompt,
+            question,
+            InventoryPredictionVO.class,
+            aiTools
+        );
+
+        if (result == null) {
+            result = new InventoryPredictionVO();
         }
-
-        //组装响应
-        InventoryPredictionVO vo = new InventoryPredictionVO();
-        vo.setProductId(productId);
-        vo.setProductName(product.getName());
-        vo.setPredictedSales(predictedSales);
-        vo.setCurrentStock(currentStock);
-        vo.setSuggestedRestock(suggestedRestock);
-        vo.setConfidenceInterval(List.of(
-            (int) Math.ceil(avgDaily * days * 0.8),
-            (int) Math.ceil(avgDaily * days * 1.2)
-        ));
-        vo.setForecast(forecast);
-        return vo;
+        result.setProductId(productId);
+        result.setProductName(product.getName());
+        if (result.getCurrentStock() == null) {
+            result.setCurrentStock(product.getStock());
+        }
+        if (result.getForecast() == null) {
+            result.setForecast(List.of());
+        }
+        if (result.getConfidenceInterval() == null || result.getConfidenceInterval().size() < 2) {
+            result.setConfidenceInterval(List.of(0, 0));
+        }
+        return result;
     }
 
     public ChurnPredictionVO predictChurn(Double threshold) {
-        if (threshold == null) threshold = 0.7;
-        List<ChurnPredictionVO.HighRiskUser> highRiskUsers = new ArrayList<>();
-        ChurnPredictionVO vo = new ChurnPredictionVO();
-        vo.setHighRiskUsers(highRiskUsers);
-        vo.setTotalAnalyzed(0);
-        return vo;
-    }
+        double riskThreshold = threshold == null ? 0.7 : threshold;
+        OrderDetailListVO orders = aiTools.getMyOrders(1, 100, null, null);
+        String systemPrompt = "你是电商会员流失分析AI。请结合会员信息、订单信息、购物车信息输出流失风险分析。"
+            + "要求："
+            + "1) highRiskUsers 为高风险用户列表；"
+            + "2) 每个用户包含 userId、riskScore、reason；"
+            + "3) riskScore 为 0 到 1 的小数；"
+            + "4) 如果信息不足，基于订单活跃度、支付金额、最近消费频率做合理推断。";
+        String question = "阈值=" + riskThreshold;
 
-    public UserProfileVO getUserProfile(Integer userId) {
-        MemberInfo member = bizClient.getMemberInfo(userId).getData();
-        OrderDetailListVO orders = bizClient.myOrders(userId.intValue(), 1, 100, null).getData();
-        int orderCount = orders.getList().size();
-        BigDecimal totalAmount = BigDecimal.ZERO;
-        for (OrderDetailVO order : orders.getList()) {
-            totalAmount = totalAmount.add(order.getPayAmount());
+        ChurnPredictionVO result = llmService.customPromptStructCall(
+            systemPrompt,
+            question,
+            ChurnPredictionVO.class,
+            (Object) aiTools
+        );
+
+        if (result == null) {
+            result = new ChurnPredictionVO();
         }
-
-        List<UserProfileVO.Label> labels = new ArrayList<>();
-        if (totalAmount.compareTo(new BigDecimal("10000")) > 0) labels.add(createLabel("高消费用户", 0.9));
-        else if (totalAmount.compareTo(new BigDecimal("5000")) > 0) labels.add(createLabel("中等消费用户", 0.8));
-        else if (orderCount > 0) labels.add(createLabel("普通消费者", 0.7));
-
-        if (orderCount > 10) labels.add(createLabel("高频购买", 0.85));
-        else if (orderCount > 3) labels.add(createLabel("活跃用户", 0.75));
-        else if (orderCount > 0) labels.add(createLabel("新用户", 0.6));
-
-        MemberLevel level = member.getLevel();
-        switch (level) {
-            case NORMAL: labels.add(createLabel(level.getDesc(), 0.6)); break;
-            case SILVER: labels.add(createLabel(level.getDesc(), 0.8)); break;
-            case GOLD: labels.add(createLabel(level.getDesc(), 0.9)); break;
-            default: break;
+        if (result.getHighRiskUsers() == null) {
+            result.setHighRiskUsers(List.of());
         }
-
-        UserProfileVO vo = new UserProfileVO();
-        vo.setUserId(userId);
-        vo.setLabels(labels);
-        return vo;
+        result.setTotalAnalyzed(orders == null || orders.getList() == null ? 0 : orders.getList().size());
+        return result;
     }
 
-    private UserProfileVO.Label createLabel(String name, double confidence) {
-        UserProfileVO.Label label = new UserProfileVO.Label();
-        label.setName(name);
-        label.setConfidence(confidence);
-        return label;
+    public UserProfileVO getUserProfile(Integer userId) throws Exception{
+        MemberInfo member = aiTools.getMemberInfo(userId);
+        OrderDetailListVO orders = aiTools.getMyOrders(userId, 1, 100, null);
+        CartListVO cart = aiTools.getCartList(userId);
+
+        String systemPrompt = "你是电商会员画像AI。请结合会员资料、订单和购物车信息，输出用户画像标签。"
+            + "要求："
+            + "1) userId 保持不变；"
+            + "2) labels 是标签数组，每个标签包含 name 和 confidence；"
+            + "3) 标签要体现消费能力、购买频次、品类偏好、价格敏感度、活跃程度等特征；"
+            + "4) confidence 范围 0 到 1；"
+            + "5) 返回结构必须可直接映射为 JSON。";
+        String question = "会员信息=" + objectMapper.writeValueAsString(member) + ", 订单数据=" + objectMapper.writeValueAsString(orders) + ", 购物车数据=" + objectMapper.writeValueAsString(cart);
+
+        UserProfileVO result = llmService.customPromptStructCall(
+            systemPrompt,
+            question,
+            UserProfileVO.class,
+            (Object) aiTools
+        );
+
+        if (result == null) {
+            result = new UserProfileVO();
+        }
+        result.setUserId(userId);
+        if (result.getLabels() == null) {
+            result.setLabels(List.of());
+        }
+        return result;
     }
+
 }

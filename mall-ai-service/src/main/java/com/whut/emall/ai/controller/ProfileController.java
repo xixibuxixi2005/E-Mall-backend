@@ -32,7 +32,7 @@ public class ProfileController {
             @Parameter(hidden = true) @RequestHeader("X-User-Id") Integer uId,
             @Parameter(hidden = true) @RequestHeader("X-Role") String role,
             @RequestParam Integer userId
-        ) {
+        ) throws Exception{
         if (!"ADMIN".equals(role) && !uId.equals(userId)) throw ApiException.err(403, "无权限访问");
         return ApiResult.ok("获取成功", predictService.getUserProfile(userId));
     }

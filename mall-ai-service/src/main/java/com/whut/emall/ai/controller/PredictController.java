@@ -3,7 +3,6 @@ package com.whut.emall.ai.controller;
 import com.whut.emall.ai.service.PredictService;
 import com.whut.emall.ai.vo.InventoryPredictionVO;
 import com.whut.emall.ai.vo.ChurnPredictionVO;
-import com.whut.emall.ai.vo.UserProfileVO;
 import com.whut.emall.common.entity.ApiResult;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
