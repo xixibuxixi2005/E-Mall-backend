@@ -1,14 +1,11 @@
 package com.whut.emall.ai.service;
 
 import java.util.List;
-import java.util.stream.Stream;
 
 import org.springframework.ai.document.Document;
 import org.springframework.ai.vectorstore.SearchRequest;
 import org.springframework.ai.vectorstore.VectorStore;
 import org.springframework.stereotype.Service;
-
-import com.whut.emall.ai.client.ChatClient;
 
 import jakarta.annotation.Resource;
 import reactor.core.publisher.Flux;

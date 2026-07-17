@@ -2,6 +2,7 @@ package com.whut.emall.business.entity.enums;
 
 import com.baomidou.mybatisplus.annotation.EnumValue;
 import com.fasterxml.jackson.annotation.JsonValue;
+import com.whut.emall.common.entity.enums.IEmallEnum;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

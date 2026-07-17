@@ -11,8 +11,8 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.extension.handlers.JacksonTypeHandler;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.whut.emall.business.entity.Product;
-import com.whut.emall.business.entity.enums.ProductStatus;
-import com.whut.emall.business.vo.ProductDetailVO;
+import com.whut.emall.common.entity.enums.ProductStatus;
+import com.whut.emall.common.vo.ProductDetailVO;
 
 @Mapper
 public interface ProductMapper extends BaseMapper<Product> {

@@ -8,7 +8,7 @@ import org.apache.ibatis.annotations.Update;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.whut.emall.business.entity.Cart;
-import com.whut.emall.business.vo.CartDetailVO;
+import com.whut.emall.common.vo.CartDetailVO;
 
 @Mapper
 public interface CartMapper extends BaseMapper<Cart> {

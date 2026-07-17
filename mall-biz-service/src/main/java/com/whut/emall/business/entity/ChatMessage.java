@@ -6,8 +6,8 @@ import java.util.Map;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.extension.handlers.JacksonTypeHandler;
-import com.whut.emall.business.entity.enums.MessageType;
-import com.whut.emall.business.entity.enums.SenderType;
+import com.whut.emall.common.entity.enums.MessageType;
+import com.whut.emall.common.entity.enums.SenderType;
 
 import lombok.Data;
 

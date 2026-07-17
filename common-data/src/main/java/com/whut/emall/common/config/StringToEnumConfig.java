@@ -1,4 +1,4 @@
-package com.whut.emall.business.config;
+package com.whut.emall.common.config;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.convert.converter.Converter;
@@ -6,7 +6,7 @@ import org.springframework.core.convert.converter.ConverterFactory;
 import org.springframework.format.FormatterRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
-import com.whut.emall.business.entity.enums.IEmallEnum;
+import com.whut.emall.common.entity.enums.IEmallEnum;
 
 @Configuration
 public class StringToEnumConfig implements WebMvcConfigurer{

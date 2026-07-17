@@ -8,9 +8,9 @@ import org.apache.ibatis.annotations.Select;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.whut.emall.business.entity.Order;
-import com.whut.emall.business.entity.enums.OrderStatus;
-import com.whut.emall.business.vo.OrderItemVO;
-import com.whut.emall.business.vo.OrderVO;
+import com.whut.emall.common.entity.enums.OrderStatus;
+import com.whut.emall.common.vo.OrderItemVO;
+import com.whut.emall.common.vo.OrderVO;
 
 public interface OrderMapper extends BaseMapper<Order>{
     @Select("""

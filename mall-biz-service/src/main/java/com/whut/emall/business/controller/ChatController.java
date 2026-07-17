@@ -4,14 +4,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.whut.emall.business.entity.enums.MessageType;
-import com.whut.emall.business.entity.enums.SenderType;
 import com.whut.emall.business.service.ChatService;
-import com.whut.emall.business.vo.ChatMessageListVO;
-import com.whut.emall.business.vo.ChatMessageVO;
 import com.whut.emall.business.vo.ChatSessionListVO;
 import com.whut.emall.business.vo.ChatSessionVO;
 import com.whut.emall.common.entity.ApiResult;
+import com.whut.emall.common.entity.enums.MessageType;
+import com.whut.emall.common.entity.enums.SenderType;
+import com.whut.emall.common.vo.ChatMessageListVO;
+import com.whut.emall.common.vo.ChatMessageVO;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;

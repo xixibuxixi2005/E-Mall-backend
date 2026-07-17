@@ -1,4 +1,4 @@
-package com.whut.emall.business.entity.enums;
+package com.whut.emall.common.entity.enums;
 
 import com.baomidou.mybatisplus.annotation.EnumValue;
 import com.fasterxml.jackson.annotation.JsonValue;

@@ -1,4 +1,4 @@
-package com.whut.emall.ai.entity.enums;
+package com.whut.emall.common.entity.enums;
 
 public interface IEmallEnum {
     public Integer getValue();

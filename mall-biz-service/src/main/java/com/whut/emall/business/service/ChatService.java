@@ -13,8 +13,6 @@ import com.whut.emall.business.entity.CSStatus;
 import com.whut.emall.business.entity.ChatMessage;
 import com.whut.emall.business.entity.ChatSession;
 import com.whut.emall.business.entity.enums.CSStatusStatus;
-import com.whut.emall.business.entity.enums.MessageType;
-import com.whut.emall.business.entity.enums.SenderType;
 import com.whut.emall.business.entity.enums.SessionMode;
 import com.whut.emall.business.entity.enums.SessionStatus;
 import com.whut.emall.business.mapper.CSStatusMapper;
@@ -22,12 +20,14 @@ import com.whut.emall.business.mapper.ChatMessageMapper;
 import com.whut.emall.business.mapper.ChatSessionMapper;
 import com.whut.emall.business.vo.AISuggestVO;
 import com.whut.emall.business.vo.CSStatusVO;
-import com.whut.emall.business.vo.ChatMessageListVO;
-import com.whut.emall.business.vo.ChatMessageVO;
 import com.whut.emall.business.vo.ChatSessionListVO;
 import com.whut.emall.business.vo.ChatSessionVO;
 import com.whut.emall.common.entity.ApiException;
+import com.whut.emall.common.entity.enums.MessageType;
+import com.whut.emall.common.entity.enums.SenderType;
 import com.whut.emall.common.utils.UniqueRamdom;
+import com.whut.emall.common.vo.ChatMessageListVO;
+import com.whut.emall.common.vo.ChatMessageVO;
 
 import jakarta.annotation.Resource;
 

@@ -4,7 +4,7 @@ import java.math.BigDecimal;
 import java.sql.Timestamp;
 
 import com.baomidou.mybatisplus.annotation.TableName;
-import com.whut.emall.business.entity.enums.OrderStatus;
+import com.whut.emall.common.entity.enums.OrderStatus;
 
 import lombok.Data;
 

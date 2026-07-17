@@ -7,7 +7,7 @@ import java.util.List;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.extension.handlers.JacksonTypeHandler;
-import com.whut.emall.business.entity.enums.ProductStatus;
+import com.whut.emall.common.entity.enums.ProductStatus;
 
 import lombok.Data;
 

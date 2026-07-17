@@ -1,4 +1,4 @@
-package com.whut.emall.ai.entity.enums;
+package com.whut.emall.common.entity.enums;
 
 import com.baomidou.mybatisplus.annotation.EnumValue;
 import com.fasterxml.jackson.annotation.JsonValue;
@@ -8,11 +8,13 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-public enum MessageType implements IEmallEnum{
-    TEXT(0, "文本"),
-    IMAGE(1, "图片"),
-    PRODUCT(2, "商品卡片"),
-    ORDER(3, "订单卡片");
+public enum OrderStatus implements IEmallEnum {
+    PENDING(0, "待支付"),
+    PAID(1, "已支付"),
+    SHIPPED(2, "已发货"),
+    FINISHED(3, "已完成"),
+    CANCELED(4, "已取消"),
+    REFUND(5, "退款中");
 
     @EnumValue final Integer value;
     @JsonValue final String desc;

@@ -6,7 +6,7 @@ import org.apache.ibatis.annotations.Update;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.whut.emall.business.entity.ChatMessage;
-import com.whut.emall.business.vo.ChatMessageVO;
+import com.whut.emall.common.vo.ChatMessageVO;
 
 public interface ChatMessageMapper extends BaseMapper<ChatMessage>{
     @Select("""

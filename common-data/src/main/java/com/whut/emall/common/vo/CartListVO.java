@@ -1,4 +1,4 @@
-package com.whut.emall.business.vo;
+package com.whut.emall.common.vo;
 
 import java.math.BigDecimal;
 import java.util.List;

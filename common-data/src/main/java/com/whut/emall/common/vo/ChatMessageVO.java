@@ -1,9 +1,9 @@
-package com.whut.emall.ai.vo;
+package com.whut.emall.common.vo;
 
 import java.sql.Timestamp;
 
-import com.whut.emall.ai.entity.enums.MessageType;
-import com.whut.emall.ai.entity.enums.SenderType;
+import com.whut.emall.common.entity.enums.MessageType;
+import com.whut.emall.common.entity.enums.SenderType;
 
 import lombok.Data;
 

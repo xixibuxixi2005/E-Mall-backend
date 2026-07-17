@@ -8,12 +8,12 @@ import org.springframework.stereotype.Service;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.whut.emall.business.entity.Cart;
 import com.whut.emall.business.entity.Product;
-import com.whut.emall.business.entity.enums.ProductStatus;
 import com.whut.emall.business.mapper.CartMapper;
 import com.whut.emall.business.mapper.ProductMapper;
-import com.whut.emall.business.vo.CartDetailVO;
-import com.whut.emall.business.vo.CartListVO;
 import com.whut.emall.common.entity.ApiException;
+import com.whut.emall.common.entity.enums.ProductStatus;
+import com.whut.emall.common.vo.CartDetailVO;
+import com.whut.emall.common.vo.CartListVO;
 
 import jakarta.annotation.Resource;
 

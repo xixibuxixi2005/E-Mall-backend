@@ -1,10 +1,10 @@
-package com.whut.emall.business.vo;
+package com.whut.emall.common.vo;
 
 import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.util.List;
 
-import com.whut.emall.business.entity.enums.ProductStatus;
+import com.whut.emall.common.entity.enums.ProductStatus;
 
 import lombok.Data;
 

@@ -4,13 +4,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.whut.emall.business.entity.Order;
-import com.whut.emall.business.entity.enums.OrderStatus;
 import com.whut.emall.business.service.OrderService;
-import com.whut.emall.business.vo.OrderDetailListVO;
-import com.whut.emall.business.vo.OrderDetailVO;
-import com.whut.emall.business.vo.OrderListVO;
 import com.whut.emall.common.entity.ApiException;
 import com.whut.emall.common.entity.ApiResult;
+import com.whut.emall.common.entity.enums.OrderStatus;
+import com.whut.emall.common.vo.OrderDetailListVO;
+import com.whut.emall.common.vo.OrderDetailVO;
+import com.whut.emall.common.vo.OrderListVO;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;

@@ -17,15 +17,15 @@ import com.whut.emall.business.entity.Cart;
 import com.whut.emall.business.entity.Order;
 import com.whut.emall.business.entity.OrderItem;
 import com.whut.emall.business.entity.Product;
-import com.whut.emall.business.entity.enums.OrderStatus;
 import com.whut.emall.business.mapper.OrderMapper;
-import com.whut.emall.business.vo.OrderDetailListVO;
-import com.whut.emall.business.vo.OrderDetailVO;
-import com.whut.emall.business.vo.OrderItemVO;
-import com.whut.emall.business.vo.OrderListVO;
-import com.whut.emall.business.vo.OrderVO;
 import com.whut.emall.common.entity.ApiException;
+import com.whut.emall.common.entity.enums.OrderStatus;
 import com.whut.emall.common.utils.UniqueRamdom;
+import com.whut.emall.common.vo.OrderDetailListVO;
+import com.whut.emall.common.vo.OrderDetailVO;
+import com.whut.emall.common.vo.OrderItemVO;
+import com.whut.emall.common.vo.OrderListVO;
+import com.whut.emall.common.vo.OrderVO;
 
 import jakarta.annotation.Resource;
 
