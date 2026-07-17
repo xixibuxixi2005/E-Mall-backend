@@ -1,0 +1,47 @@
+server:
+  port: 0
+  servlet:
+    context-path: /api
+
+spring:
+  application:
+    name: mall-biz-service
+  cloud:
+    nacos:
+      discovery:
+        server-addr: 127.0.0.1:8848
+  datasource:
+    url: "jdbc:mysql://127.0.0.1:3306/emall"
+    username: emall
+    password: emmmmmmmmmeeeall
+  data:
+    redis:
+      host: 127.0.0.1
+      port: 6379
+  mail:
+    host: smtp.qq.com
+    port: 465
+    username: ${EMALL_MAIL_USERNAME}
+    password: ${EMALL_MAIL_PASSWORD}
+    protocol: smtp
+    properties:
+      mail.smtp:
+        auth: true
+        ssl.enable: true
+
+
+mybatis-plus:
+  configuration:
+    map-underscore-to-camel-case: true
+  global-config:
+    db-config:
+      id-type: auto
+
+springdoc:
+  api-docs:
+    enabled: true
+    path: /biz/v3/api-docs
+
+emall:
+  static_path:
+    doc: ./static/doc
