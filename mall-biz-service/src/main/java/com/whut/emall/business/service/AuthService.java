@@ -1,12 +1,10 @@
 package com.whut.emall.business.service;
 
+import java.time.Duration;
 import java.util.Random;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.ScheduledThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
@@ -25,22 +23,36 @@ import jakarta.annotation.Resource;
 
 @Service
 public class AuthService {
-    @Resource JwtUtils jwtUtils;
     @Resource MemberService memberService;
     @Resource SysUserService sysUserService;
     @Resource JavaMailSender javaMailSender;
+    @Resource JwtUtils jwtUtils;
+    @Resource RedisTemplate<String, Object> redisTemplate;
+
+    static final String SENDCODE="EMALL:SENDCODE:";
+    static final String REGDCODE="EMALL:REGCODE:";
+    
+    private void redisSet(String type, String email, Object value, Duration timeout) {
+        redisTemplate.boundValueOps(type+email)
+            .set(value, timeout);
+    }
+    private Object redisGet(String type, String email) {
+        return redisTemplate.boundValueOps(type+email).get();
+    }
+    private Boolean redisHas(String type, String email) {
+        return redisTemplate.hasKey(type+email);
+    }
+    private void redisDel(String type, String email) {
+        redisTemplate.delete(type+email);
+    }
 
     Random random = new Random();
-    ConcurrentHashMap<String,String> registerCodes = new ConcurrentHashMap<>();
-    ConcurrentHashMap<String,ScheduledFuture<?>> registerCodesTask = new ConcurrentHashMap<>();
-    ConcurrentHashMap<String,ScheduledFuture<?>> sendCodesTask = new ConcurrentHashMap<>();
-    ScheduledThreadPoolExecutor executor = new ScheduledThreadPoolExecutor(10);
 
     public void register(RegisterDTO dto) {
         String email = dto.getEmail();
         if (memberService.getMemberByEmail(email)!=null)
             throw ApiException.err(400, "该邮箱已注册");
-        if (!dto.getVerificationCode().equals(registerCodes.get(email)))
+        if (!dto.getVerificationCode().equals(redisGet(REGDCODE, email)))
             throw ApiException.err(401, "验证码错误");
         Member member = new Member();
         member.setEmail(email);
@@ -48,31 +60,18 @@ public class AuthService {
         member.setPassword(PasswordUtils.encryptPassword(dto.getPassword()));
         member.setUsername(dto.getUsername());
         memberService.addMember(member);
+        redisDel(REGDCODE, email);
     }
 
     @Value("${spring.mail.username}") String mailFrom;
     public void sendCode(String email) {
         if (memberService.getMemberByEmail(email)!=null)
             throw ApiException.err(400, "该邮箱已注册");
-        if (sendCodesTask.containsKey(email))
+        if (redisHas(SENDCODE, email))
             throw ApiException.err(429, "发送过于频繁，请稍后再试");
         String code = String.format("%06d", random.nextInt(1000000));
-        registerCodes.put(email, code);
-
-        if (registerCodesTask.containsKey(email)) {
-            registerCodesTask.get(email).cancel(false);
-        }
-        registerCodesTask.put(email,
-            executor.schedule(() -> {
-                registerCodes.remove(email);
-                registerCodesTask.remove(email);
-            }, 300L, TimeUnit.SECONDS)
-        );
-        sendCodesTask.put(email,
-            executor.schedule(() -> {
-                sendCodesTask.remove(email);
-            }, 60L, TimeUnit.SECONDS)
-        );
+        redisSet(REGDCODE, email, code, Duration.ofSeconds(300));
+        redisSet(SENDCODE, email, 1, Duration.ofSeconds(60));
         
         System.out.println("验证码："+code);
         MimeMessageHelper message = new MimeMessageHelper(javaMailSender.createMimeMessage());
