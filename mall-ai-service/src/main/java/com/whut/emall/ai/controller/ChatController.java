@@ -2,6 +2,7 @@ package com.whut.emall.ai.controller;
 
 import java.util.Map;
 
+import org.springframework.http.MediaType;
 import org.springframework.http.codec.ServerSentEvent;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -25,7 +26,7 @@ import reactor.core.publisher.Flux;
 
 @RestController
 @RequestMapping("/chat")
-@Tag(name = "智能问答（未实现）", description = "用于会员和客服之间咨询聊天的模块")
+@Tag(name = "智能问答", description = "用于会员和客服之间咨询聊天的模块")
 public class ChatController {
     @Resource ChatService chatService;
     @Resource ChatClient chatClient;
@@ -33,15 +34,13 @@ public class ChatController {
     @Operation(summary = "智能问答（SSE流式）", description = "会员或客服向AI提问，AI返回流式回答")
     @ApiResponse(responseCode = "200", description = "流式返回中")
     @SecurityRequirement(name = "Authorization")
-    @GetMapping("stream")
-    public Flux<ServerSentEvent<String>> streamChat(
+    @GetMapping(value = "stream", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+    public Flux<String> streamChat(
         @RequestParam String question,
         @RequestParam(required = false) Integer sessionId,
         @RequestParam(required = false, defaultValue = "5") Integer topK
     ) {
-        return chatService.streamChat(question, sessionId, topK)
-            .map(msg -> ServerSentEvent.builder(msg).event("message").build())
-            .concatWith(Flux.just(ServerSentEvent.builder("[DONE]").event("message").build()));
+        return chatService.streamChat(question, sessionId, topK);
     }
 
     @Operation(summary = "获取消息列表", description = "获取指定会话的所有消息")
