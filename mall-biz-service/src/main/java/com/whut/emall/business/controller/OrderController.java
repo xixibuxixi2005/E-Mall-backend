@@ -48,7 +48,6 @@ public class OrderController {
     @SecurityRequirement(name = "Authorization")
     @GetMapping("list")
     public ApiResult<OrderListVO> getOrderList(
-        @Parameter(hidden = true) @RequestHeader("X-Role") String role,
         @RequestParam(required = false, defaultValue = "1") Integer pageNum,
         @RequestParam(required = false, defaultValue = "10") Integer pageSize,
         @RequestParam(required = false) String orderNo,
@@ -57,8 +56,6 @@ public class OrderController {
         @RequestParam(required = false) Timestamp startTime,
         @RequestParam(required = false) Timestamp endTime
     ) {
-        if (!"ADMIN".equals(role) && !"CS".equals(role))
-            throw ApiException.err(403, "无权限查看订单列表");
         return ApiResult.ok("查询成功", orderService.orderList(pageNum, pageSize, orderNo, userId, status, startTime, endTime));
     }
     

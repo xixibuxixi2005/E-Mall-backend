@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.whut.emall.ai.client.ChatClient;
+import com.whut.emall.ai.client.BizClient;
 import com.whut.emall.ai.service.ChatService;
 import com.whut.emall.common.entity.ApiResult;
 
@@ -28,7 +28,7 @@ import reactor.core.publisher.Flux;
 @Tag(name = "智能问答", description = "用于会员和客服之间咨询聊天的模块")
 public class ChatController {
     @Resource ChatService chatService;
-    @Resource ChatClient chatClient;
+    @Resource BizClient bizClient;
 
     @Operation(summary = "智能问答（SSE流式）", description = "会员或客服向AI提问，AI返回流式回答")
     @ApiResponse(responseCode = "200", description = "流式返回中")
@@ -52,37 +52,10 @@ public class ChatController {
         @RequestParam(required = false, defaultValue = "20") Integer pageSize
     ) throws Exception {
        try{
-          return chatClient.getHistories(pageNum, pageSize, sessionId);
+          return bizClient.getHistories(pageNum, pageSize, sessionId);
        } catch (FeignException err) {
             Map<String,Object> obj = new ObjectMapper().readValue(err.contentUTF8(), Map.class);
             return new ApiResult<>((int)obj.get("code"), (String)obj.get("msg"), (Object)obj.get("data"));
        }
     }
 }
-
-/**
- * 1.2 智能问答（SSE流式）
-GET /api/ai/chat/stream
-权限：ADMIN / CS（也可对MEMBER开放，根据业务需要）
-请求参数（Query）：
-参数	类型	必填	说明
-question	string	是	用户提问（需URL Encode）
-sessionId	string	否	会话ID（用于关联历史）
-topK	int	否	检索文档块数量，默认5
-响应：text/event-stream
-
-事件格式：
-event: message，data: 单字/词组
-最终以 data: [DONE] 结束
-引用来源通过最后一条 event: source 返回（JSON格式）
-示例（前端监听）：
-const es = new EventSource('/api/ai/chat/stream?question=支持快充吗&sessionId=10001');
-es.addEventListener('message', (e) => {
-  if (e.data === '[DONE]') { es.close(); return; }
-  appendText(e.data);
-});
-es.addEventListener('source', (e) => {
-  const sources = JSON.parse(e.data);
-  showReferences(sources);
-});
- */

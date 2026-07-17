@@ -38,8 +38,12 @@ public class LLMService {
         return client.prompt().system(prompt).user(question).stream().content();
     }
 
-    public <T> T customPromptStructCall(String prompt, String question, Class<T> responseType) {
+    public <T> T customPromptStructCall(String prompt, String question, Class<T> responseType, Object ...tools) {
         ChatClient client = ChatClient.builder(chatModel).build();
-        return client.prompt().system(prompt).user(question).call().entity(responseType);
+        var spec = client.prompt().system(prompt).user(question);
+        for (var tool: tools) {
+            spec.tools(tool);
+        }
+        return spec.call().entity(responseType);
     }
 }

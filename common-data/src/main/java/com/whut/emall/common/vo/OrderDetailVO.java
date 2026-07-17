@@ -2,9 +2,12 @@ package com.whut.emall.common.vo;
 
 import java.util.List;
 
-import lombok.Getter;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 
-@Getter
+@Data @EqualsAndHashCode(callSuper = false)
+@NoArgsConstructor
 public class OrderDetailVO extends OrderVO{
     List<OrderItemVO> items;
     public OrderDetailVO(OrderVO order, List<OrderItemVO> items) {

@@ -3,9 +3,9 @@ package com.whut.emall.business.controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.whut.emall.business.entity.Category;
 import com.whut.emall.business.service.CategoryService;
 import com.whut.emall.common.entity.ApiResult;
+import com.whut.emall.common.entity.Category;
 import com.whut.emall.common.entity.ApiException;
 
 import io.swagger.v3.oas.annotations.Operation;

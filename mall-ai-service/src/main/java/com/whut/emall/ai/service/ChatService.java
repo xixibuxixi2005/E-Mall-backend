@@ -7,6 +7,8 @@ import org.springframework.ai.vectorstore.SearchRequest;
 import org.springframework.ai.vectorstore.VectorStore;
 import org.springframework.stereotype.Service;
 
+import com.whut.emall.ai.client.BizClient;
+
 import jakarta.annotation.Resource;
 import reactor.core.publisher.Flux;
 
@@ -14,6 +16,7 @@ import reactor.core.publisher.Flux;
 public class ChatService {
     @Resource LLMService llmService;
     @Resource VectorStore vectorStore;
+    @Resource BizClient bizClient;
 
     public Flux<String> streamChat(String question, Integer sessionId, Integer topK) {
         // TODO: 支持特定会话上下文回答

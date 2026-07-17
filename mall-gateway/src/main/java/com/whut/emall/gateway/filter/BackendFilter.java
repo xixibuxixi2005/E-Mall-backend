@@ -13,6 +13,7 @@ import com.whut.emall.common.entity.ApiException;
 @Component
 public class BackendFilter implements GlobalFilter,Ordered{
     private final String[] backendPrefix = {
+        "/api/biz/order/list",
         "/api/chat/cs/",
         "/api/chat/sentiment/",
     };
