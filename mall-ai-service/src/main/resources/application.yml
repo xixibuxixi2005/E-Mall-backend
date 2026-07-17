@@ -21,14 +21,14 @@ spring:
   ai:
     openai:
       base-url: https://api.deepseek.com
-      api-key: sk-ef37c14e0efc400aa1630db63f9c6442
+      api-key: ${DS_KEY}
       chat:
         options:
           model: deepseek-v4-flash 
           temperature: 0.8
       embedding:
         base-url: https://api.siliconflow.cn
-        api-key: sk-lkfrchyurusjwguynnxlmuooxrlymdbakdcgbbaajptztmno
+        api-key: ${SF_KEY}
         options:
           model: BAAI/bge-m3
     vectorstore:

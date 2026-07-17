@@ -14,6 +14,7 @@ import com.whut.emall.common.entity.ApiException;
 public class BackendFilter implements GlobalFilter,Ordered{
     private final String[] backendPrefix = {
         "/api/chat/cs/",
+        "/api/chat/sentiment/",
     };
     private final String[] nonBackendPrefix = {
     };
