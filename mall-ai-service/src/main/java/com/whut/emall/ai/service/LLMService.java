@@ -34,8 +34,12 @@ public class LLMService {
         promptBuilder.append("你是一个AI问答助理，根据可能的参考资料回答用户问题。若根据现有资料无法回答，回复“根据知识库内容无法回答”。资料：\n");
         promptBuilder.append(docsToPromt(docs, 0.5));
         String prompt = promptBuilder.toString();
-        System.out.println(prompt);
         ChatClient client = ChatClient.builder(chatModel).build();
-        return client.prompt().system(prompt).user(question).stream().content().doOnNext(s->System.out.println(s));
+        return client.prompt().system(prompt).user(question).stream().content();
+    }
+
+    public <T> T customPromptStructCall(String prompt, String question, Class<T> responseType) {
+        ChatClient client = ChatClient.builder(chatModel).build();
+        return client.prompt().system(prompt).user(question).call().entity(responseType);
     }
 }
