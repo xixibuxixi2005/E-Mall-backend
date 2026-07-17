@@ -1,4 +1,4 @@
-package com.whut.emall.business.entity;
+package com.whut.emall.common.entity;
 
 import java.sql.Timestamp;
 

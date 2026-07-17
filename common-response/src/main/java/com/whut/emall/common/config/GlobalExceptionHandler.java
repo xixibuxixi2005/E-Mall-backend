@@ -7,14 +7,19 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.whut.emall.common.entity.ApiException;
 import com.whut.emall.common.entity.ApiResult;
 
+import feign.FeignException;
 import jakarta.validation.ConstraintViolationException;
 
 
 @RestControllerAdvice
 public class GlobalExceptionHandler{
+    final ObjectMapper objectMapper = new ObjectMapper();
+
     @ExceptionHandler(ApiException.class)
     public ApiResult<?> handleApiException(ApiException err) {
         return err.toResult();
@@ -38,6 +43,15 @@ public class GlobalExceptionHandler{
     @ExceptionHandler(NoResourceFoundException.class)
     public ApiResult<?> handleNoResourceFoundException(NoResourceFoundException err) {
         return ApiException.err(404, "无效的请求路径: " + err.getResourcePath()).toResult();
+    }
+
+    @ExceptionHandler(FeignException.class)
+    public ApiResult<?> handleFeignException(FeignException err) {
+        try {
+            return objectMapper.readValue(err.contentUTF8(), ApiResult.class);
+        } catch (Exception e) {
+            return ApiException.err(500, "请求失败: " + err.contentUTF8()).toResult();
+        }
     }
 
     @ExceptionHandler({ErrorResponseException.class})

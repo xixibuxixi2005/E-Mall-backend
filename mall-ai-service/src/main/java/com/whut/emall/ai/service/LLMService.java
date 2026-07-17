@@ -14,7 +14,7 @@ import reactor.core.publisher.Flux;
 public class LLMService {
     @Resource ChatModel chatModel;
     
-    private String docsToPromt(List<Document> docs, Double minConf) {
+    private String docsToPrompt(List<Document> docs, Double minConf) {
         if (docs==null || docs.isEmpty()) return "";
         final double conf = minConf==null ? 0. : minConf;
         docs = docs.stream().filter(doc -> doc.getScore()>=conf).toList();
@@ -32,7 +32,7 @@ public class LLMService {
     public Flux<String> streamSimilarChar(String question, List<Document> docs) {
         StringBuilder promptBuilder = new StringBuilder();
         promptBuilder.append("你是一个AI问答助理，根据可能的参考资料回答用户问题。若根据现有资料无法回答，回复“根据知识库内容无法回答”。资料：\n");
-        promptBuilder.append(docsToPromt(docs, 0.5));
+        promptBuilder.append(docsToPrompt(docs, 0.5));
         String prompt = promptBuilder.toString();
         ChatClient client = ChatClient.builder(chatModel).build();
         return client.prompt().system(prompt).user(question).stream().content();

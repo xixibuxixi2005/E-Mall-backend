@@ -6,7 +6,7 @@ import java.util.List;
 
 @Data
 public class UserProfileVO {
-    private Long userId;
+    private Integer userId;
     private List<Label> labels;
 
     @Data

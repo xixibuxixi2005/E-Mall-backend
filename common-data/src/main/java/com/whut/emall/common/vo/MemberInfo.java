@@ -1,8 +1,8 @@
-package com.whut.emall.business.vo;
+package com.whut.emall.common.vo;
 
 import java.sql.Timestamp;
 
-import com.whut.emall.business.entity.enums.MemberLevel;
+import com.whut.emall.common.entity.enums.MemberLevel;
 
 import lombok.Data;
 

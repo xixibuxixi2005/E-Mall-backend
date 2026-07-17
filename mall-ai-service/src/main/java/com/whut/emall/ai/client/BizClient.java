@@ -8,6 +8,7 @@ import com.whut.emall.common.entity.Category;
 import com.whut.emall.common.entity.enums.OrderStatus;
 import com.whut.emall.common.entity.enums.ProductStatus;
 import com.whut.emall.common.vo.CartListVO;
+import com.whut.emall.common.vo.MemberInfo;
 import com.whut.emall.common.vo.OrderDetailListVO;
 import com.whut.emall.common.vo.ProductDetailVO;
 import com.whut.emall.common.vo.ProductListVO;
@@ -51,4 +52,7 @@ public interface BizClient {
 
     @GetMapping("/biz/category")
     ApiResult<List<Category>> getCategories();
+
+    @GetMapping("/biz/member/info")
+    ApiResult<MemberInfo> getMemberInfo(@RequestHeader("X-User-Id") Integer userId);
 }

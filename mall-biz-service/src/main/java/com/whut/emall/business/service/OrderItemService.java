@@ -6,8 +6,8 @@ import org.springframework.stereotype.Service;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.whut.emall.business.entity.OrderItem;
 import com.whut.emall.business.mapper.OrderItemMapper;
+import com.whut.emall.common.entity.OrderItem;
 
 @Service
 public class OrderItemService extends ServiceImpl<OrderItemMapper, OrderItem>{

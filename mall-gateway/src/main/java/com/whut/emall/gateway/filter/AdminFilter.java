@@ -15,6 +15,7 @@ public class AdminFilter implements GlobalFilter,Ordered{
     private final String[] adminPrefix = {
         "/api/admin",
         "/api/ai/knowledge",
+        "/api/ai/predict",
     };
     private final String[] nonAdminPrefix = {
     };

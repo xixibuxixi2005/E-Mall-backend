@@ -12,7 +12,7 @@ public class ChurnPredictionVO {
 
     @Data
     public static class HighRiskUser {
-        private Long userId;
+        private Integer userId;
         private Double riskScore;
         private String reason;
     }

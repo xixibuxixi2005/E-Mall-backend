@@ -24,7 +24,7 @@ public class PredictController {
             description = "基于历史销售数据预测未来销量，生成补货建议")
     @GetMapping("/inventory")
     public ApiResult<InventoryPredictionVO> predictInventory(
-            @RequestParam Long productId,
+            @RequestParam Integer productId,
             @RequestParam(required = false, defaultValue = "7") Integer days) {
         return ApiResult.ok("预测成功", predictService.predictInventory(productId, days));
     }
@@ -35,13 +35,5 @@ public class PredictController {
     public ApiResult<ChurnPredictionVO> predictChurn(
             @RequestParam(required = false, defaultValue = "0.7") Double threshold) {
         return ApiResult.ok("分析成功", predictService.predictChurn(threshold));
-    }
-
-    @Operation(summary = "会员画像标签",
-            description = "基于用户行为生成画像标签")
-    @GetMapping("/profile")
-    public ApiResult<UserProfileVO> getUserProfile(
-            @RequestParam Long userId) {
-        return ApiResult.ok("获取成功", predictService.getUserProfile(userId));
     }
 }
