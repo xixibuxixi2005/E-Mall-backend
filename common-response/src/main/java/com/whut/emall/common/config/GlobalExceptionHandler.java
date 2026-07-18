@@ -50,7 +50,7 @@ public class GlobalExceptionHandler{
         try {
             return objectMapper.readValue(err.contentUTF8(), ApiResult.class);
         } catch (Exception e) {
-            return ApiException.err(500, "请求失败: " + err.contentUTF8()).toResult();
+            return ApiException.err(500, "请求失败: " + err.getLocalizedMessage()).toResult();
         }
     }
 
