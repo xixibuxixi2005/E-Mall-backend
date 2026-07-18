@@ -6,5 +6,5 @@ import lombok.Data;
 
 @Data
 public class RecommendListVO {
-    List<RecommendsVO> recommendations;
+    List<RecommendVO> recommendations;
 }
