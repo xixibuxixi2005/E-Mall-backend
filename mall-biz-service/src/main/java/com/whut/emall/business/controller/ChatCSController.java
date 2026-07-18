@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.RestController;
 import com.whut.emall.business.entity.enums.CSStatusStatus;
 import com.whut.emall.business.entity.enums.SessionStatus;
 import com.whut.emall.business.service.ChatService;
-import com.whut.emall.business.vo.AISuggestVO;
 import com.whut.emall.business.vo.CSStatusVO;
 import com.whut.emall.business.vo.ChatSessionListVO;
 import com.whut.emall.business.vo.ChatSessionVO;
@@ -41,6 +40,15 @@ import lombok.Data;
 public class ChatCSController {
     @Resource ChatService chatService;
 
+    @Operation(summary = "获取客服当前状态", description = "获取客服当前状态")
+    @ApiResponse(responseCode = "200", description = "获取成功")
+    @SecurityRequirement(name = "Authorization")
+    @GetMapping("status")
+    public ApiResult<CSStatusVO> getStatus(
+        @Parameter(hidden = true) @RequestHeader("X-User-Id") Integer uid
+    ) {
+        return ApiResult.ok("获取成功", chatService.csGetStatus(uid));
+    }
     @Operation(summary = "切换在线状态（上下班）", description = "客服切换在线/离线/忙碌状态")
     @ApiResponse(responseCode = "200", description = "状态切换成功")
     @SecurityRequirement(name = "Authorization")
@@ -84,17 +92,6 @@ public class ChatCSController {
         @RequestBody @Valid CSMessageDTO dto
     ) {
         return ApiResult.ok("发送成功", chatService.sendMessage(uid, SenderType.CS, dto.getSessionId(), dto.getContent(), dto.getMsgType(), dto.getExtraData()));
-    }
-
-    @Operation(summary = "AI 辅助回复建议（未实现）", description = "客服输入问题时，AI 生成回复建议（非流式，快速返回）")
-    @ApiResponse(responseCode = "200", description = "生成成功")
-    @SecurityRequirement(name = "Authorization")
-    @PostMapping("ai-suggest")
-    public ApiResult<AISuggestVO> aiSuggest(
-        @Parameter(hidden = true) @RequestHeader("X-User-Id") Integer uid,
-        @RequestBody @Valid CSAISuggestDTO dto
-    ) {
-        return ApiResult.ok("生成成功", chatService.csAiSuggest(uid, dto.getSessionId(), dto.getUserQuestion()));
     }
 
     @Operation(summary = "切换 AI 托管模式（未实现）", description = "客服将会话切换至 AI 自动回复模式（用于下班后或繁忙时）")

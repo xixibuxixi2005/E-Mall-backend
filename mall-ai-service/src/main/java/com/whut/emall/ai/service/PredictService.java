@@ -9,6 +9,7 @@ import com.whut.emall.ai.vo.InventoryPredictionVO;
 import com.whut.emall.ai.vo.UserProfileVO;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.whut.emall.ai.tools.AITools;
+import com.whut.emall.common.entity.ApiException;
 import com.whut.emall.common.vo.CartListVO;
 import com.whut.emall.common.vo.MemberInfo;
 import com.whut.emall.common.vo.OrderDetailListVO;
@@ -26,7 +27,7 @@ public class PredictService {
         int forecastDays = days == null ? 7 : Math.max(1, days);
         ProductDetailVO product = aiTools.getProductDetail(productId);
         if (product == null) {
-            throw new RuntimeException("商品不存在");
+            throw ApiException.err(404, "商品不存在");
         }
 
         String systemPrompt = "你是电商库存预测AI。请结合商品信息、商品列表、分类信息与用户历史订单趋势，输出库存预测结果。"

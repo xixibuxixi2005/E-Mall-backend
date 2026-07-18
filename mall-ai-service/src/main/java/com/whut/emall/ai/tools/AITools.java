@@ -16,6 +16,7 @@ import com.whut.emall.common.entity.OrderItem;
 import com.whut.emall.common.entity.enums.OrderStatus;
 import com.whut.emall.common.entity.enums.ProductStatus;
 import com.whut.emall.common.vo.CartListVO;
+import com.whut.emall.common.vo.ChatMessageListVO;
 import com.whut.emall.common.vo.OrderDetailListVO;
 import com.whut.emall.common.vo.ProductDetailVO;
 import com.whut.emall.common.vo.ProductListVO;
@@ -35,6 +36,13 @@ public class AITools {
         return LocalDate.now();
     }
 
+    @Tool(description = "根据会话ID获取会话消息列表,pageSize为-1时获取全部消息")
+    public ChatMessageListVO getChatMessages(Integer pageNum, Integer pageSize, Integer sessionId) {
+        log.debug("获取会话消息列表: pageNum={}, pageSize={}, sessionId={}", pageNum, pageSize, sessionId);
+        ApiResult<ChatMessageListVO> result = bizClient.getHistories(pageNum, pageSize, sessionId);
+        return result == null ? null : result.getData();
+    }
+
     @Tool(description = "根据商品ID获取商品详情")
     public ProductDetailVO getProductDetail(Integer id) {
         log.debug("获取商品详情: id={}", id);
@@ -49,7 +57,7 @@ public class AITools {
         return result == null ? null : result.getData();
     }
 
-    @Tool(description = "根据用户ID获取个人订单列表")
+    @Tool(description = "根据用户ID获取个人订单列表,pageSize为-1时获取全部订单")
     public OrderDetailListVO getMyOrders(Integer userId, Integer pageNum, Integer pageSize, OrderStatus status) {
         log.debug("获取个人订单列表: userId={}, pageNum={}, pageSize={}, status={}", userId, pageNum, pageSize, status);
         ApiResult<OrderDetailListVO> result = bizClient.myOrders(userId, pageNum, pageSize, status);
@@ -63,7 +71,7 @@ public class AITools {
         return result == null ? null : result.getData();
     }
 
-    @Tool(description = "根据商品名称、状态和价格区间获取商品列表")
+    @Tool(description = "根据商品名称、状态和价格区间获取商品列表,pageSize为-1时获取全部商品")
     public ProductListVO getProductList(Integer pageNum, Integer pageSize, String name, ProductStatus status, BigDecimal minPrice, BigDecimal maxPrice) {
         log.debug("获取商品列表: pageNum={}, pageSize={}, name={}, status={}, minPrice={}, maxPrice={}", pageNum, pageSize, name, status, minPrice, maxPrice);
         ApiResult<ProductListVO> result = bizClient.productList(pageNum, pageSize, name, status, minPrice, maxPrice);

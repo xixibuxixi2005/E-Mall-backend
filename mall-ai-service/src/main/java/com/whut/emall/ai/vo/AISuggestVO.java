@@ -1,4 +1,4 @@
-package com.whut.emall.business.vo;
+package com.whut.emall.ai.vo;
 
 import java.util.List;
 

@@ -1,7 +1,6 @@
 package com.whut.emall.business.service;
 
 import java.sql.Timestamp;
-import java.util.Arrays;
 import java.util.Map;
 
 import org.springframework.stereotype.Service;
@@ -18,7 +17,6 @@ import com.whut.emall.business.entity.enums.SessionStatus;
 import com.whut.emall.business.mapper.CSStatusMapper;
 import com.whut.emall.business.mapper.ChatMessageMapper;
 import com.whut.emall.business.mapper.ChatSessionMapper;
-import com.whut.emall.business.vo.AISuggestVO;
 import com.whut.emall.business.vo.CSStatusVO;
 import com.whut.emall.business.vo.ChatSessionListVO;
 import com.whut.emall.business.vo.ChatSessionVO;
@@ -139,7 +137,14 @@ public class ChatService {
         return statusMapper.selectOne(wrapper);
     }
 
+// ============================ 客服端 ============================
 
+    public CSStatusVO csGetStatus(Integer userId) {
+        CSStatus csStatus = getCSStatusByCsId(userId);
+        if (csStatus == null)
+            throw ApiException.err(404, "客服不存在");
+        return statusMapper.getVOByCsId(userId);
+    }
 
     public CSStatusVO csSetStatus(Integer userId, CSStatusStatus status) {
         CSStatus csStatus = getCSStatusByCsId(userId);
@@ -179,13 +184,6 @@ public class ChatService {
         statusMapper.updateById(csStatus);
 
         return statusMapper.getVOByCsId(csId);
-    }
-
-    public AISuggestVO csAiSuggest(Integer csId, Integer sessionId, String userQuestion) {
-        AISuggestVO suggestVO = new AISuggestVO();
-        // TODO: 使用RAG实现建议接口
-        suggestVO.setSuggestions(Arrays.asList("未实现建议接口"));
-        return null;
     }
 
     @Transactional(rollbackFor = Exception.class)
