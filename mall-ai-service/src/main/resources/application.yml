@@ -9,14 +9,14 @@ spring:
   cloud:
     nacos:
       discovery:
-        server-addr: 127.0.0.1:8848
+        server-addr: ${HOST_IP:host.docker.internal}:8848
   datasource:
-    url: "jdbc:mysql://127.0.0.1:3306/emall"
-    username: emall
-    password: emmmmmmmmmeeeall
+    url: "jdbc:mysql://${HOST_IP:host.docker.internal}:3306/emall?de"
+    username: ${MYSQL_NAME}
+    password: ${MYSQL_PSWD}
   data:
     redis:
-      host: 127.0.0.1
+      host: redis
       port: 6379
   ai:
     openai:
@@ -24,7 +24,7 @@ spring:
       api-key: ${DS_KEY}
       chat:
         options:
-          model: deepseek-v4-flash 
+          model: deepseek-v4-flash
           temperature: 0.8
       embedding:
         base-url: https://api.siliconflow.cn
@@ -36,7 +36,7 @@ spring:
         initialize-schema: true
         embedding-dimension: 1024
         client:
-          host: 127.0.0.1
+          host: milvus
 
 mybatis-plus:
   configuration:
