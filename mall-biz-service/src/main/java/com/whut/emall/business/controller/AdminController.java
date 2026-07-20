@@ -11,8 +11,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.whut.emall.business.entity.enums.UserStatus;
 import com.whut.emall.business.service.AdminService;
-import com.whut.emall.business.vo.SysUserInfo;
-import com.whut.emall.business.vo.SysUserListVO;
+import com.whut.emall.business.vo.UserInfo;
+import com.whut.emall.business.vo.UserListVO;
 import com.whut.emall.common.entity.ApiException;
 import com.whut.emall.common.entity.ApiResult;
 
@@ -39,7 +39,7 @@ public class AdminController {
     @ApiResponse(responseCode = "200", description = "创建成功")
     @SecurityRequirement(name = "Authorization")
     @PostMapping("/user/create")
-    public ApiResult<SysUserInfo> userCreate(@RequestBody @Valid UserCreateDTO dto) {
+    public ApiResult<UserInfo> userCreate(@RequestBody @Valid UserCreateDTO dto) {
         if (!"CS".equals(dto.getRoleCode())) 
             throw ApiException.err(400, "前端仅能新建客服(roleCode=CS)");
         var result = adminService.userCreate(dto.getEmail(), dto.getPassword(), dto.getUsername(), dto.getPhone(), dto.getRoleCode());
@@ -50,7 +50,7 @@ public class AdminController {
     @ApiResponse(responseCode = "200", description = "查询成功")
     @SecurityRequirement(name = "Authorization")
     @GetMapping("/user/list")
-    public ApiResult<SysUserListVO> userList(
+    public ApiResult<UserListVO> userList(
         @RequestParam(required = false, defaultValue = "1") Integer pageNum,
         @RequestParam(required = false, defaultValue = "10") Integer pageSize,
         @RequestParam(required = false) String username,
