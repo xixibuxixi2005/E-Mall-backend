@@ -1,19 +1,16 @@
 package com.whut.emall.ai.controller;
 
-import java.util.Map;
-
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.whut.emall.ai.client.BizClient;
 import com.whut.emall.ai.service.ChatService;
 import com.whut.emall.common.entity.ApiResult;
+import com.whut.emall.common.vo.ChatMessageListVO;
 
-import feign.FeignException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -46,16 +43,11 @@ public class ChatController {
     @ApiResponse(responseCode = "200", description = "获取成功")
     @SecurityRequirement(name = "Authorization")
     @GetMapping("history")
-    public Object listMessage(
+    public ApiResult<ChatMessageListVO> listMessage(
         @Valid @NotNull(message = "sessionId 不可为空")Integer sessionId,
         @RequestParam(required = false, defaultValue = "1") Integer pageNum,
         @RequestParam(required = false, defaultValue = "20") Integer pageSize
-    ) throws Exception {
-       try{
-          return bizClient.getHistories(pageNum, pageSize, sessionId);
-       } catch (FeignException err) {
-            Map<String,Object> obj = new ObjectMapper().readValue(err.contentUTF8(), Map.class);
-            return new ApiResult<>((int)obj.get("code"), (String)obj.get("msg"), (Object)obj.get("data"));
-       }
+    ) {
+        return bizClient.getHistories(pageNum, pageSize, sessionId);
     }
 }
