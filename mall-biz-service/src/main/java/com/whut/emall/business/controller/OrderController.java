@@ -3,15 +3,14 @@ package com.whut.emall.business.controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.whut.emall.business.config.EMallResponse;
 import com.whut.emall.business.entity.Order;
-import com.whut.emall.business.entity.enums.OrderStatus;
 import com.whut.emall.business.service.OrderService;
-import com.whut.emall.business.vo.OrderDetailListVO;
-import com.whut.emall.business.vo.OrderDetailVO;
-import com.whut.emall.business.vo.OrderListVO;
 import com.whut.emall.common.entity.ApiException;
 import com.whut.emall.common.entity.ApiResult;
+import com.whut.emall.common.entity.enums.OrderStatus;
+import com.whut.emall.common.vo.OrderDetailListVO;
+import com.whut.emall.common.vo.OrderDetailVO;
+import com.whut.emall.common.vo.OrderListVO;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -20,10 +19,12 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.Resource;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
+import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.util.List;
 
@@ -38,7 +39,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 @RestController
 @RequestMapping("/biz/order")
-@EMallResponse
 @Tag(name = "订单接口", description = "查看订单详情")
 public class OrderController {
     @Resource OrderService orderService;
@@ -48,7 +48,6 @@ public class OrderController {
     @SecurityRequirement(name = "Authorization")
     @GetMapping("list")
     public ApiResult<OrderListVO> getOrderList(
-        @Parameter(hidden = true) @RequestHeader("X-Role") String role,
         @RequestParam(required = false, defaultValue = "1") Integer pageNum,
         @RequestParam(required = false, defaultValue = "10") Integer pageSize,
         @RequestParam(required = false) String orderNo,
@@ -57,8 +56,6 @@ public class OrderController {
         @RequestParam(required = false) Timestamp startTime,
         @RequestParam(required = false) Timestamp endTime
     ) {
-        if (!"ADMIN".equals(role) && !"CS".equals(role))
-            throw ApiException.err(403, "无权限查看订单列表");
         return ApiResult.ok("查询成功", orderService.orderList(pageNum, pageSize, orderNo, userId, status, startTime, endTime));
     }
     
@@ -115,6 +112,19 @@ public class OrderController {
         return ApiResult.ok("查询成功", orderService.myOrders(pageNum, pageSize, uid, status));
     }
     
+    @Operation(summary = "支付订单", description = "普通用户支付自己的订单")
+    @ApiResponse(responseCode = "200", description = "订单支付成功")
+    @SecurityRequirement(name = "Authorization")
+    @PutMapping("{id}/pay")
+    public ApiResult<Void> payOrder(
+        @Parameter(hidden = true) @RequestHeader("X-User-Id") Integer uid,
+        @PathVariable Integer id,
+        @RequestBody @Valid OrderPayDTO dto
+    ) {
+        orderService.pay(uid, id, dto.getAmount());
+        return ApiResult.ok("订单支付成功");
+    }
+    
     @Operation(summary = "取消订单", description = "普通用户取消自己的订单（仅限待支付状态）")
     @ApiResponse(responseCode = "200", description = "订单已取消")
     @SecurityRequirement(name = "Authorization")
@@ -145,6 +155,13 @@ public class OrderController {
         @NotEmpty(message = "收货地址不可为空")
         String receiverAddress;
         String remark;
+    }
+
+    @Data
+    static class OrderPayDTO {
+        @NotNull(message = "amount不可为空")
+        @DecimalMin("0")
+        BigDecimal amount;
     }
 
     @Data

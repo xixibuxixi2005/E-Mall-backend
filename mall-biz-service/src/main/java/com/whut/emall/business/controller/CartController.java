@@ -12,9 +12,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.whut.emall.business.service.CartService;
-import com.whut.emall.business.vo.CartDetailVO;
-import com.whut.emall.business.vo.CartListVO;
 import com.whut.emall.common.entity.ApiResult;
+import com.whut.emall.common.vo.CartDetailVO;
+import com.whut.emall.common.vo.CartListVO;
 
 import jakarta.annotation.Resource;
 import jakarta.validation.Valid;

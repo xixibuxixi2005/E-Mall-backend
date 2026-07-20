@@ -9,11 +9,11 @@ import jakarta.annotation.Resource;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.whut.emall.business.entity.Product;
-import com.whut.emall.business.entity.enums.ProductStatus;
 import com.whut.emall.business.mapper.ProductMapper;
-import com.whut.emall.business.vo.ProductDetailVO;
-import com.whut.emall.business.vo.ProductListVO;
 import com.whut.emall.common.entity.ApiException;
+import com.whut.emall.common.entity.enums.ProductStatus;
+import com.whut.emall.common.vo.ProductDetailVO;
+import com.whut.emall.common.vo.ProductListVO;
 
 @Service
 public class ProductService extends ServiceImpl<ProductMapper, Product>{

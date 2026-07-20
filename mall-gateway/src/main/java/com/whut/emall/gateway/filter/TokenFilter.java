@@ -25,6 +25,7 @@ public class TokenFilter implements GlobalFilter,Ordered{
         "/api/biz/test",
         "/api/auth",
         "/api/biz/v3/api-docs",
+        "/api/ai/v3/api-docs",
     };
     private final String[] nonPublicPrefix = {
         "/api/biz/test/welcome",
@@ -52,6 +53,9 @@ public class TokenFilter implements GlobalFilter,Ordered{
         if (token == null || token.isEmpty() || !token.startsWith("Bearer ")) {
             throw ApiException.err(HttpStatus.UNAUTHORIZED.value(), "Authorization token格式错误");
         }
+
+        if (path.equals("/api/auth/refresh"))
+            return chain.filter(exchange);
 
         JwtPayload payload;
         try {

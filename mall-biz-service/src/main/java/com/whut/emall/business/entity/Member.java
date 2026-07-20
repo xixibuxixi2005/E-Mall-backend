@@ -3,8 +3,8 @@ package com.whut.emall.business.entity;
 import java.sql.Timestamp;
 
 import com.baomidou.mybatisplus.annotation.TableName;
-import com.whut.emall.business.entity.enums.MemberLevel;
 import com.whut.emall.business.entity.enums.UserStatus;
+import com.whut.emall.common.entity.enums.MemberLevel;
 
 import lombok.Data;
 

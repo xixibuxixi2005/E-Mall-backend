@@ -8,8 +8,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.whut.emall.business.service.MemberService;
-import com.whut.emall.business.vo.MemberInfo;
 import com.whut.emall.common.entity.ApiResult;
+import com.whut.emall.common.vo.MemberInfo;
 
 import jakarta.annotation.Resource;
 import jakarta.validation.Valid;

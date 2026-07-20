@@ -72,7 +72,7 @@ public class JwtUtils {
         } catch (IllegalArgumentException e) {
             throw ApiException.err(401, "token为空或不合法");
         } catch (JwtException e) {
-            throw ApiException.err(401, "token验证失败: " + e.getMessage());
+            throw ApiException.err(401, "token验证失败: " + e.getLocalizedMessage());
         } catch (Exception e) {
             throw ApiException.err("verify失败: "+e.getLocalizedMessage());
         }
@@ -82,5 +82,18 @@ public class JwtUtils {
     }
     public JwtPayload parserRefreshToken(String token) {
         return parserToken(token, "refresh", JwtPayload.class);
+    }
+
+    public JwtPayload parseWithNoVerification(String token) {
+        try {
+            try {
+                Claims claims = (Claims)Jwts.parser().verifyWith(secretKey).build().parse(token).getPayload();
+                return objectMapper.readValue(claims.get("auth", String.class), JwtPayload.class);
+            } catch (ExpiredJwtException e) {
+                return objectMapper.readValue(e.getClaims().get("auth", String.class), JwtPayload.class);
+            }
+        } catch (Exception e) {
+            throw ApiException.err("verify失败: "+e.getLocalizedMessage());
+        }
     }
 }

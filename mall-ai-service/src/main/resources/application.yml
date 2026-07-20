@@ -1,0 +1,52 @@
+server:
+  port: 0
+  servlet:
+    context-path: /api/ai
+
+spring:
+  application:
+    name: mall-ai-service
+  cloud:
+    nacos:
+      discovery:
+        server-addr: 127.0.0.1:8848
+  datasource:
+    url: "jdbc:mysql://127.0.0.1:3306/emall"
+    username: emall
+    password: emmmmmmmmmeeeall
+  data:
+    redis:
+      host: 127.0.0.1
+      port: 6379
+  ai:
+    openai:
+      base-url: https://api.deepseek.com
+      api-key: ${DS_KEY}
+      chat:
+        options:
+          model: deepseek-v4-flash 
+          temperature: 0.8
+      embedding:
+        base-url: https://api.siliconflow.cn
+        api-key: ${SF_KEY}
+        options:
+          model: BAAI/bge-m3
+    vectorstore:
+      milvus:
+        initialize-schema: true
+        embedding-dimension: 1024
+        client:
+          host: 127.0.0.1
+
+mybatis-plus:
+  configuration:
+    map-underscore-to-camel-case: true
+  global-config:
+    db-config:
+      id-type: auto
+
+
+springdoc:
+  api-docs:
+    enabled: true
+    path: /v3/api-docs

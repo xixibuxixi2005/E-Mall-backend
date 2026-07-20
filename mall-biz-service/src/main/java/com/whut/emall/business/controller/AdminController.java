@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.whut.emall.business.config.EMallResponse;
 import com.whut.emall.business.entity.enums.UserStatus;
 import com.whut.emall.business.service.AdminService;
 import com.whut.emall.business.vo.SysUserInfo;
@@ -33,7 +32,6 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 @Tag(name = "管理接口", description = "用户管理相关接口")
 @RestController
 @RequestMapping("/admin")
-@EMallResponse
 public class AdminController {
     @Resource AdminService adminService;
 

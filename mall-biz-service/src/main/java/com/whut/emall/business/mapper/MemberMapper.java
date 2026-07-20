@@ -5,7 +5,7 @@ import org.apache.ibatis.annotations.Select;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.whut.emall.business.entity.Member;
-import com.whut.emall.business.vo.MemberInfo;
+import com.whut.emall.common.vo.MemberInfo;
 
 @Mapper
 public interface MemberMapper extends BaseMapper<Member>{

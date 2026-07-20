@@ -5,9 +5,9 @@ import org.springframework.stereotype.Service;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.whut.emall.business.entity.Member;
 import com.whut.emall.business.mapper.MemberMapper;
-import com.whut.emall.business.vo.MemberInfo;
 import com.whut.emall.common.entity.ApiException;
 import com.whut.emall.common.utils.PasswordUtils;
+import com.whut.emall.common.vo.MemberInfo;
 
 import jakarta.annotation.Resource;
 
@@ -20,7 +20,9 @@ public class MemberService {
     }
 
     public MemberInfo getInfoById(Integer id) {
-        return memberMapper.selectInfoById(id);
+        MemberInfo info = memberMapper.selectInfoById(id);
+        if (info == null) throw ApiException.err(404, "该用户不存在");
+        return info;
     }
     
     public Member getMemberByEmail(String email) {

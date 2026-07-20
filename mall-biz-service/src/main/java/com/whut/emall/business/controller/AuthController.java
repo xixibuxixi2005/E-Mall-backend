@@ -16,6 +16,7 @@ import com.whut.emall.common.entity.ApiException;
 import com.whut.emall.common.entity.ApiResult;
 
 import jakarta.annotation.Resource;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
@@ -62,12 +63,10 @@ public class AuthController {
     @SecurityRequirement(name = "Authorization")
     @PostMapping("refresh")
     public ApiResult<Map<String,String>> refresh(
-            @RequestBody Map<String,String> body,
+            @RequestBody @Valid RefreshDTO dto,
             @Parameter(hidden = true) @RequestHeader("Authorization") String accessToken
         ) {
-        String refreshToken = body.getOrDefault("refreshToken", "").strip();
-        if (refreshToken.isEmpty()) throw ApiException.err(400, "无效refreshToken！");
-        return ApiResult.ok("刷新成功", Map.of("token", authService.refresh(accessToken.substring(7), refreshToken)));
+        return ApiResult.ok("刷新成功", Map.of("token", authService.refresh(accessToken.substring(7), dto.getRefreshToken())));
     }
 
     @Operation(summary = "退出登录", description = "当前返回成功，后续可扩展黑名单机制")
@@ -82,5 +81,10 @@ public class AuthController {
     static class LoginDTO {
         @NotBlank(message = "email不能为空") String email;
         @NotNull(message = "password不能为空") String password;
+    }
+
+    @Data
+    static class RefreshDTO {
+        @NotBlank(message = "refreshToken不能为空") String refreshToken;
     }
 }

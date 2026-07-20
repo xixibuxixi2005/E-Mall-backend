@@ -5,9 +5,9 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.whut.emall.business.entity.Category;
 import com.whut.emall.business.mapper.CategoryMapper;
 import com.whut.emall.common.entity.ApiException;
+import com.whut.emall.common.entity.Category;
 
 import jakarta.annotation.Resource;
 
