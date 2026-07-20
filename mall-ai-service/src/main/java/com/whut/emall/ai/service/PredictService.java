@@ -2,6 +2,7 @@ package com.whut.emall.ai.service;
 
 import java.util.List;
 
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import com.whut.emall.ai.vo.ChurnPredictionVO;
@@ -92,6 +93,7 @@ public class PredictService {
         return result;
     }
 
+    @Cacheable(value = "EMALL:AI:USER_PROFILE", key = "#userId")
     public UserProfileVO getUserProfile(Integer userId) throws Exception{
         MemberInfo member = aiTools.getMemberInfo(userId);
         OrderDetailListVO orders = aiTools.getMyOrders(userId, 1, 100, null);
