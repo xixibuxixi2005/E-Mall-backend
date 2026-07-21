@@ -20,6 +20,13 @@ spring:
         predicates:
           - Path=/api/biz/**, /api/auth/**, /api/admin/**, /api/chat/**
 
+      - id: static-files
+        uri: http://127.0.0.1:9000/
+        predicates:
+          - Path=/static/**
+        filters:
+        - StripPrefix=1
+
 knife4j:
   gateway:
     enabled: true

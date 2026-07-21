@@ -16,6 +16,7 @@
         <module>common-response</module>
         <module>common-redis</module>
         <module>common-data</module>
+        <module>common-minio</module>
     </modules>
 
     <parent>
@@ -93,6 +94,11 @@
                 <groupId>org.commonmark</groupId>
                 <artifactId>commonmark</artifactId>
                 <version>0.24.0</version>
+            </dependency>
+            <dependency>
+                <groupId>io.minio</groupId>
+                <artifactId>minio</artifactId>
+                <version>8.5.17</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

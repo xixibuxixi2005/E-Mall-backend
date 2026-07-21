@@ -22,6 +22,7 @@ import jakarta.annotation.Resource;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.Data;
 
 import org.springframework.web.bind.annotation.RequestParam;
@@ -104,7 +105,7 @@ public class ProductController {
         if (!"ADMIN".equals(role)) {
             throw ApiException.err(403, "无权限更新商品");
         }
-        productService.updateProduct(id, product.getName(), product.getSubTitle(), product.getPrice(), product.getStock(), product.getDescription());
+        productService.updateProduct(id, product.getName(), product.getSubTitle(), product.getPrice(), product.getStock(), product.getDescription(), product.getImageUrls());
         return ApiResult.ok("更新成功");
     }
 
@@ -165,6 +166,8 @@ public class ProductController {
         @Min(value = 0, message = "库存不能小于0")
         Integer stock;
         String description;
+        @Size(min = 0, max = 15, message = "只能上传0~15张图片")
+        List<String> imageUrls;
     }
 
     @Data
