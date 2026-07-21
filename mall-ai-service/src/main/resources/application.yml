@@ -55,6 +55,6 @@ springdoc:
     path: /v3/api-docs
 
 minio:
-  endpoint: http://127.0.0.1:9000
-  access_key: minioadmin
-  secret_key: minioadmin
+  endpoint: http://minio:9000
+  access_key: ${MINIO_ACCESS_KEY}
+  secret_key: ${MINIO_SECRET_KEY}
