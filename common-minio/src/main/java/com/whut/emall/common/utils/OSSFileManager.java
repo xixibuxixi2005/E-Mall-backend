@@ -98,13 +98,14 @@ public class OSSFileManager {
         return filenames;
     }
 
+    @SneakyThrows
     private int deleteFiles(List<String> filenames, String bucket) {
         int deleted = filenames.size();
         var errors = client.removeObjects(RemoveObjectsArgs.builder().bucket(bucket).objects(
             filenames.stream().map(DeleteObject::new).toList()
         ).build());
         for (var error: errors) {
-            System.err.println("文件删除失败："+error.toString());
+            System.err.println("文件删除失败："+error.get().message());
             deleted -= 1;
         }
         return deleted;
