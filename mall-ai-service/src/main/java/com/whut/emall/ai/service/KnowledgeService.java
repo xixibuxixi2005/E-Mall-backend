@@ -1,8 +1,6 @@
 package com.whut.emall.ai.service;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.nio.file.Files;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -28,10 +26,10 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.whut.emall.ai.entity.KnowledgeDoc;
 import com.whut.emall.ai.mapper.KnowledgeDocMapper;
-import com.whut.emall.ai.utils.FileUtils;
 import com.whut.emall.ai.vo.KnowledgeListVO;
 import com.whut.emall.ai.vo.KnowledgeVO;
 import com.whut.emall.common.entity.ApiException;
+import com.whut.emall.common.utils.OSSFileManager;
 
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
@@ -39,7 +37,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @Service
 public class KnowledgeService extends ServiceImpl<KnowledgeDocMapper, KnowledgeDoc>{
-    @Resource FileUtils fileUtils;
+    @Resource OSSFileManager ossFileManager;
     @Resource VectorStore vectorStore;
     
     static final Map<String,String> FILE_TYPES = Map.of(
@@ -54,7 +52,6 @@ public class KnowledgeService extends ServiceImpl<KnowledgeDocMapper, KnowledgeD
 
     @Transactional(rollbackFor = Exception.class)
     public KnowledgeVO uploadDoc(MultipartFile file, Integer productId, String category, String title) {
-        File localFile = null;
         try {
             if (title==null || title.isEmpty())
                 title = file.getOriginalFilename();
@@ -62,12 +59,13 @@ public class KnowledgeService extends ServiceImpl<KnowledgeDocMapper, KnowledgeD
             if (fileType == null) {
                 throw ApiException.err(400, "无法解析的文件类型");
             }
-            localFile = fileUtils.uploadDoc(file, fileType);
+
+            String url = ossFileManager.docsUpload(new MultipartFile[]{file}).get(0);
 
             String text;
 
             if (fileType.equals("pdf")) {
-                try (PDDocument document = Loader.loadPDF(localFile)) {
+                try (PDDocument document = Loader.loadPDF(file.getBytes())) {
                     PDFTextStripper stripper = new PDFTextStripper();
                     stripper.setSortByPosition(true);
                     text = stripper.getText(document);
@@ -75,7 +73,7 @@ public class KnowledgeService extends ServiceImpl<KnowledgeDocMapper, KnowledgeD
                     throw ApiException.err(e.getLocalizedMessage());
                 }
             } else if (fileType.equals("docx")) {
-                try (XWPFDocument document = new XWPFDocument(new FileInputStream(localFile));
+                try (XWPFDocument document = new XWPFDocument(file.getInputStream());
                     XWPFWordExtractor extractor = new XWPFWordExtractor(document)) {
                     text = extractor.getText();
                 } catch (Exception e) {
@@ -83,7 +81,7 @@ public class KnowledgeService extends ServiceImpl<KnowledgeDocMapper, KnowledgeD
                 }
             }  else if (fileType.equals("md") || fileType.equals("txt")) {
                 try {
-                    text = Files.readString(localFile.toPath());
+                    text = new String(file.getBytes(), StandardCharsets.UTF_8);
                     if (fileType.equalsIgnoreCase("md"))
                         text = TextContentRenderer.builder().build().render(
                             Parser.builder().build().parse(text)
@@ -103,7 +101,7 @@ public class KnowledgeService extends ServiceImpl<KnowledgeDocMapper, KnowledgeD
             doc.setTitle(title);
             doc.setCategory(category);
             doc.setProductId(productId);
-            doc.setFileName(localFile.getName());
+            doc.setFileName(url);
             doc.setFileType(fileType);
             doc.setChunkCount(0);
             save(doc);
@@ -115,8 +113,6 @@ public class KnowledgeService extends ServiceImpl<KnowledgeDocMapper, KnowledgeD
             updateById(doc);
             return baseMapper.getVo(doc.getId());
         } catch (Exception e) {
-            if (localFile != null)
-                fileUtils.deleteDoc(localFile.getName());
             throw e;
         }
     }
@@ -125,7 +121,7 @@ public class KnowledgeService extends ServiceImpl<KnowledgeDocMapper, KnowledgeD
         KnowledgeDoc doc = getById(id);
         if (doc == null)
             throw ApiException.err(404, "未找到该文档");
-        fileUtils.deleteDoc(doc.getFileName());
+        ossFileManager.docsDelete(Arrays.asList(doc.getFileName()));
         vectorStore.delete(new Filter.Expression(
             Filter.ExpressionType.EQ,
             new Filter.Key("docId"),
