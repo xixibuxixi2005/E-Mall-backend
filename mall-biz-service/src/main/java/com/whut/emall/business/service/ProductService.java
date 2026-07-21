@@ -12,12 +12,14 @@ import com.whut.emall.business.entity.Product;
 import com.whut.emall.business.mapper.ProductMapper;
 import com.whut.emall.common.entity.ApiException;
 import com.whut.emall.common.entity.enums.ProductStatus;
+import com.whut.emall.common.utils.OSSFileManager;
 import com.whut.emall.common.vo.ProductDetailVO;
 import com.whut.emall.common.vo.ProductListVO;
 
 @Service
 public class ProductService extends ServiceImpl<ProductMapper, Product>{
     @Resource ProductMapper productMapper;
+    @Resource OSSFileManager ossFileManager;
 
     public ProductListVO productlist(Integer pageNum, Integer pageSize, String name, ProductStatus status, BigDecimal minPrice, BigDecimal maxPrice) {
         Page<ProductDetailVO> page = new Page<>(pageNum, pageSize);
@@ -56,23 +58,29 @@ public class ProductService extends ServiceImpl<ProductMapper, Product>{
         return vo;
     }
 
-    public void updateProduct(Integer id, String name, String subTitle, BigDecimal price, Integer stock, String description) {
+    public void updateProduct(Integer id, String name, String subTitle, BigDecimal price, Integer stock, String description, List<String> imageUrls) {
         Product product = productMapper.selectById(id);
         if (product == null)
             throw ApiException.err(404, "商品不存在");
+        List<String> imgsNeedToDelete = product.getImageUrls().stream().filter(
+            imageUrl -> !imageUrls.contains(imageUrl)
+        ).toList();
         product.setId(id);
         product.setName(name);
         product.setSubTitle(subTitle);
         product.setPrice(price);
         product.setStock(stock);
         product.setDescription(description);
+        product.setImageUrls(imageUrls);
         productMapper.updateById(product);
+        ossFileManager.imagesDelete(imgsNeedToDelete);
     }
 
     public void deleteProduct(Integer id) {
-        if (productMapper.selectById(id) == null)
+        Product product = productMapper.selectById(id);
+        if (product == null)
             throw ApiException.err(404, "商品不存在");
-        
+        ossFileManager.imagesDelete(product.getImageUrls());
         productMapper.deleteById(id);
     }
 
