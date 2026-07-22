@@ -9,6 +9,7 @@ public class OrderItemVO {
     Integer id;
     Integer productId;
     String productName;
+    String imageUrl;
     BigDecimal productPrice;
     Integer quantity;
     BigDecimal totalPrice;

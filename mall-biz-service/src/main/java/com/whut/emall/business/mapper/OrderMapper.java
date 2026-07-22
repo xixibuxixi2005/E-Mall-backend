@@ -25,6 +25,7 @@ public interface OrderMapper extends BaseMapper<Order>{
 
     @Select("""
         SELECT oi.*, p.name AS productName, p.price AS productPrice,
+            JSON_UNQUOTE(JSON_EXTRACT(p.image_urls, '$[0]')) AS imageUrl,
             oi.quantity * p.price AS totalPrice
             FROM order_item oi
             LEFT JOIN product p ON oi.product_id = p.id
