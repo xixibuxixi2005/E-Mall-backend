@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/predict")
 @RequiredArgsConstructor
-@Tag(name = "AI辅助决策与预警", description = "库存预测、会员流失预警、会员画像标签")
+@Tag(name = "AI辅助决策与预警", description = "库存预测、会员流失预警")
 @SecurityRequirement(name = "Authorization")
 public class PredictController {
 

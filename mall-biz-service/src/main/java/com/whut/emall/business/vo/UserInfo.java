@@ -7,7 +7,7 @@ import com.whut.emall.business.entity.enums.UserStatus;
 import lombok.Data;
 
 @Data
-public class SysUserInfo {
+public class UserInfo {
     Integer id;
     String username;
     String phone;

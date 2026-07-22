@@ -144,11 +144,6 @@ public class ChatCSController {
         Map<String,Object> extraData;
     }
     @Data
-    static class CSAISuggestDTO {
-        @NotNull(message = "sessionId 不可为空") Integer sessionId;
-        @NotBlank(message = "userQuestion 不可为空") String userQuestion;
-    }
-    @Data
     static class CSAIModeDTO {
         @NotNull(message = "sessionId 不可为空") Integer sessionId;
         @NotNull(message = "aiMode 不可为空") Boolean aiMode;

@@ -16,6 +16,8 @@ public class BackendFilter implements GlobalFilter,Ordered{
         "/api/biz/order/list",
         "/api/chat/cs/",
         "/api/chat/sentiment/",
+        "/api/ai/knowledge",
+        "/static/doc/",
     };
     private final String[] nonBackendPrefix = {
     };

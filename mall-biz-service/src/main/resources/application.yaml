@@ -2,6 +2,9 @@ server:
   port: 0
   servlet:
     context-path: /api
+    multipart:
+      max-file-size: 15MB
+      max-request-size: 150MB
 
 spring:
   application:
@@ -45,3 +48,8 @@ springdoc:
 emall:
   static_path:
     doc: ./static/doc
+
+minio:
+  endpoint: http://127.0.0.1:9000
+  access_key: minioadmin
+  secret_key: minioadmin

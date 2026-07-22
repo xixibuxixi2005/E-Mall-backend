@@ -2,6 +2,7 @@ package com.whut.emall.ai.service;
 
 import java.util.List;
 
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import com.whut.emall.ai.vo.ChurnPredictionVO;
@@ -23,6 +24,7 @@ public class PredictService {
     @Resource AITools aiTools;
     final ObjectMapper objectMapper = new ObjectMapper();
 
+    @Cacheable(value = "EMALL:AI:INVENTORY", key = "#productId + '-' + #days")
     public InventoryPredictionVO predictInventory(Integer productId, Integer days) {
         int forecastDays = days == null ? 7 : Math.max(1, days);
         ProductDetailVO product = aiTools.getProductDetail(productId);
@@ -64,6 +66,7 @@ public class PredictService {
         return result;
     }
 
+    @Cacheable(value = "EMALL:AI:CHURN", key = "#threshold")
     public ChurnPredictionVO predictChurn(Double threshold) {
         double riskThreshold = threshold == null ? 0.7 : threshold;
         OrderDetailListVO orders = aiTools.getMyOrders(1, 100, null, null);
@@ -92,18 +95,18 @@ public class PredictService {
         return result;
     }
 
+    @Cacheable(value = "EMALL:AI:USER_PROFILE", key = "#userId")
     public UserProfileVO getUserProfile(Integer userId) throws Exception{
         MemberInfo member = aiTools.getMemberInfo(userId);
-        OrderDetailListVO orders = aiTools.getMyOrders(userId, 1, 100, null);
+        OrderDetailListVO orders = aiTools.getMyOrders(userId, 1, -1, null);
         CartListVO cart = aiTools.getCartList(userId);
 
-        String systemPrompt = "你是电商会员画像AI。请结合会员资料、订单和购物车信息，输出用户画像标签。"
-            + "要求："
-            + "1) userId 保持不变；"
-            + "2) labels 是标签数组，每个标签包含 name 和 confidence；"
-            + "3) 标签要体现消费能力、购买频次、品类偏好、价格敏感度、活跃程度等特征；"
-            + "4) confidence 范围 0 到 1；"
-            + "5) 返回结构必须可直接映射为 JSON。";
+        String systemPrompt = """
+你是电商会员画像AI。请结合会员资料、订单和购物车信息，以JSON格式输出用户画像标签。
+格式如{"userId":1,"labels":[{"name":"高消费用户","confidence":0.8},{"name":"数码迷","confidence":0.75}]}
+labels 是标签数组，每个标签包含标签名称name和标签置信度confidence；
+标签要体现消费能力、购买频次、品类偏好、价格敏感度、活跃程度等特征；"
+""";
         String question = "会员信息=" + objectMapper.writeValueAsString(member) + ", 订单数据=" + objectMapper.writeValueAsString(orders) + ", 购物车数据=" + objectMapper.writeValueAsString(cart);
 
         UserProfileVO result = llmService.customPromptStructCall(
