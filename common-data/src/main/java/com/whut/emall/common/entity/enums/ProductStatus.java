@@ -9,8 +9,8 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public enum ProductStatus implements IEmallEnum{
-    ON_SALE(1, "上架"),
-    OFF_SALE(0, "下架");
+    OFF_SALE(0, "下架"),
+    ON_SALE(1, "上架");
 
     @EnumValue final Integer value;
     @JsonValue final String desc;
