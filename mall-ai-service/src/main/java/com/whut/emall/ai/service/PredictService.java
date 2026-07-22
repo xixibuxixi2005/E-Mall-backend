@@ -24,6 +24,7 @@ public class PredictService {
     @Resource AITools aiTools;
     final ObjectMapper objectMapper = new ObjectMapper();
 
+    @Cacheable(value = "EMALL:AI:INVENTORY", key = "#productId + '-' + #days")
     public InventoryPredictionVO predictInventory(Integer productId, Integer days) {
         int forecastDays = days == null ? 7 : Math.max(1, days);
         ProductDetailVO product = aiTools.getProductDetail(productId);
@@ -65,6 +66,7 @@ public class PredictService {
         return result;
     }
 
+    @Cacheable(value = "EMALL:AI:CHURN", key = "#threshold")
     public ChurnPredictionVO predictChurn(Double threshold) {
         double riskThreshold = threshold == null ? 0.7 : threshold;
         OrderDetailListVO orders = aiTools.getMyOrders(1, 100, null, null);
