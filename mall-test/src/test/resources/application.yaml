@@ -1,0 +1,27 @@
+server:
+  port: 0
+  servlet:
+    context-path: /api
+
+spring:
+  application:
+    name: mall-test
+  cloud:
+    nacos:
+      discovery:
+        enabled: false
+  datasource:
+    url: "jdbc:mysql://127.0.0.1:3306/e-mall_biz"
+    username: root
+    password: 20050807
+  data:
+    redis:
+      host: 127.0.0.1
+      port: 6379
+
+mybatis-plus:
+  configuration:
+    map-underscore-to-camel-case: true
+  global-config:
+    db-config:
+      id-type: auto
