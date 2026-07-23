@@ -27,6 +27,7 @@ public class RedisCacheConfig {
         cacheConfigs.put("EMALL:AI:USER_PROFILE", config.entryTtl(Duration.ofHours(3)));
         cacheConfigs.put("EMALL:AI:INVENTORY", config.entryTtl(Duration.ofHours(12)));
         cacheConfigs.put("EMALL:AI:CHURN", config.entryTtl(Duration.ofHours(12)));
+        cacheConfigs.put("EMALL:AI:USER_RECOMMEND", config.entryTtl(Duration.ofHours(1)));
 
         return RedisCacheManager.builder(redisConnectionFactory)
             .cacheDefaults(config)
