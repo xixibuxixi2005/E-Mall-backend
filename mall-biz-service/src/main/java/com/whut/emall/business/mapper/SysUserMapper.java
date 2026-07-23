@@ -15,9 +15,11 @@ public interface SysUserMapper extends BaseMapper<SysUser>{
 
     @Select("""
         <script>
-        SELECT id, username, phone, role_code, status, create_time FROM sys_user
-        UNION ALL
-        SELECT id, username, phone, 'MEMBER' AS role_code, status, create_time FROM member
+        SELECT * FROM (
+            SELECT id, username, phone, role_code, status, create_time FROM sys_user
+            UNION ALL
+            SELECT id, username, phone, 'MEMBER' AS role_code, status, create_time FROM member
+        ) AS t
         <where>
             <if test="username != null and username != ''">
                 AND username LIKE CONCAT('%', #{username}, '%')

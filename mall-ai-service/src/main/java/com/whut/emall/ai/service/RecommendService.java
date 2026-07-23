@@ -5,6 +5,8 @@ import java.time.LocalDate;
 import java.util.Comparator;
 import java.util.List;
 
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
@@ -51,6 +53,7 @@ score范围0到1，按相关性降序，生成%d个推荐结果（若不足可�
         userRecommendMapper.insert(recs);
     }
 
+    @Cacheable(value = "EMALL:AI:USER_RECOMMEND", key = "#userId +'-' + #size")
     public RecommendListVO recommendByBehavior(Integer userId, Integer size) {
         LocalDate today = LocalDate.now();
         Timestamp lastRecommendTime = userRecommendMapper.getLastRecommendTime(userId);
@@ -66,6 +69,7 @@ score范围0到1，按相关性降序，生成%d个推荐结果（若不足可�
         return vo;
     }
 
+    @CacheEvict(value = "EMALL:AI:USER_RECOMMEND", allEntries = true)
     public void refresh(Integer userId, String eventType, Integer productId) {
         // if (userId == null || eventType == null) throw ApiException.err(400, "参数不能为空");
         updateUserRecommend(userId, 20);

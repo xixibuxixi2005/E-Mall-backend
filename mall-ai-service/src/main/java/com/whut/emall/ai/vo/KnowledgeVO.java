@@ -10,6 +10,7 @@ public class KnowledgeVO {
     String title;
     String category;
     Integer productId;
+    String url;
     String fileType;
     Integer status;
     Integer chunkCount;

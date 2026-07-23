@@ -101,7 +101,7 @@ public class KnowledgeService extends ServiceImpl<KnowledgeDocMapper, KnowledgeD
             doc.setTitle(title);
             doc.setCategory(category);
             doc.setProductId(productId);
-            doc.setFileName(url);
+            doc.setUrl(url);
             doc.setFileType(fileType);
             doc.setChunkCount(0);
             save(doc);
@@ -121,7 +121,7 @@ public class KnowledgeService extends ServiceImpl<KnowledgeDocMapper, KnowledgeD
         KnowledgeDoc doc = getById(id);
         if (doc == null)
             throw ApiException.err(404, "未找到该文档");
-        ossFileManager.docsDelete(Arrays.asList(doc.getFileName()));
+        ossFileManager.docsDelete(Arrays.asList(doc.getUrl()));
         vectorStore.delete(new Filter.Expression(
             Filter.ExpressionType.EQ,
             new Filter.Key("docId"),
@@ -145,7 +145,6 @@ public class KnowledgeService extends ServiceImpl<KnowledgeDocMapper, KnowledgeD
             metadata.put("category", doc.getCategory() == null ? "null" : doc.getCategory());
             metadata.put("productId", doc.getProductId() == null ? "null" : doc.getProductId().toString());
             metadata.put("chunkIndex", index);
-            metadata.put("source", doc.getFileName());
             documents.add(new Document(chunks.get(index), metadata));
         }
         return documents;
