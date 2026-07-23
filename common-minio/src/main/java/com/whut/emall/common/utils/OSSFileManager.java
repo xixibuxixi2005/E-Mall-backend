@@ -17,7 +17,6 @@ import io.minio.RemoveObjectsArgs;
 import io.minio.SetBucketPolicyArgs;
 import io.minio.messages.DeleteObject;
 import jakarta.annotation.Resource;
-import lombok.SneakyThrows;
 
 @Component
 public class OSSFileManager {
@@ -60,8 +59,7 @@ public class OSSFileManager {
 """, bucket, bucket);
     }
 
-    @SneakyThrows
-    private void ensureBucket(String bucket) {
+    private void ensureBucket(String bucket) throws Exception{
         if (!client.bucketExists(BucketExistsArgs.builder().bucket(bucket).build())) {
             client.makeBucket(MakeBucketArgs.builder().bucket(bucket).build());
             client.setBucketPolicy(SetBucketPolicyArgs.builder()
@@ -71,7 +69,7 @@ public class OSSFileManager {
     }
 
     @Resource MinioClient client;
-    private List<String> uploadFiles(MultipartFile[] files, String bucket){
+    private List<String> uploadFiles(MultipartFile[] files, String bucket) throws Exception{
         ensureBucket(bucket);List<String> filenames = new ArrayList<>();
         for (var file: files) {
             String fileFullName = file.getOriginalFilename();
@@ -98,15 +96,18 @@ public class OSSFileManager {
         return filenames;
     }
 
-    @SneakyThrows
     private int deleteFiles(List<String> filenames, String bucket) {
         int deleted = filenames.size();
         var errors = client.removeObjects(RemoveObjectsArgs.builder().bucket(bucket).objects(
             filenames.stream().map(DeleteObject::new).toList()
         ).build());
         for (var error: errors) {
-            System.err.println("文件删除失败："+error.get().message());
-            deleted -= 1;
+            try {
+                System.err.println("文件删除失败："+error.get().message());
+                deleted -= 1;
+            } catch (Exception e) {
+              System.err.println("文件删除失败："+e.getLocalizedMessage());
+            }
         }
         return deleted;
     }
@@ -117,7 +118,11 @@ public class OSSFileManager {
     @Value("${emall.img-url-prefix:/static/img/}")
     String imgUrlPrefix;
     public List<String> imagesUpload(MultipartFile[] images) {
-        return uploadFiles(images, imgBucket).stream().map(name -> imgUrlPrefix+name).toList();
+        try {
+            return uploadFiles(images, imgBucket).stream().map(name -> imgUrlPrefix+name).toList();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
     public int imagesDelete(List<String> urls) {
         return deleteFiles(urls.stream().map(
@@ -130,7 +135,11 @@ public class OSSFileManager {
     @Value("${emall.doc-url-prefix:/static/doc/}")
     String docUrlPrefix;
     public List<String> docsUpload(MultipartFile[] docs) {
-        return uploadFiles(docs, docBucket).stream().map(name -> docUrlPrefix+name).toList();
+        try {
+            return uploadFiles(docs, docBucket).stream().map(name -> docUrlPrefix+name).toList();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
     public int docsDelete(List<String> urls) {
         return deleteFiles(urls.stream().map(
