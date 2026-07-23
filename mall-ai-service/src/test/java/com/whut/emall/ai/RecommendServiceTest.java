@@ -30,6 +30,9 @@ public class RecommendServiceTest {
 
     private static Integer testRecommendId;
 
+    private static final Integer productId = 1;
+    private static final Integer userId = 7;
+
     @Test
     @Order(1)
     public void testSelectPage() {
@@ -44,8 +47,8 @@ public class RecommendServiceTest {
     @Order(2)
     public void testInsertRecommend() {
         UserRecommend rec = new UserRecommend();
-        rec.setUserId(1);
-        rec.setProductId(1);
+        rec.setUserId(userId);
+        rec.setProductId(productId);
         rec.setScore(0.85);
         rec.setReason("测试推荐理由");
         userRecommendMapper.insert(rec);
@@ -67,7 +70,7 @@ public class RecommendServiceTest {
     @Test
     @Order(4)
     public void testGetVOsByUserId() {
-        var list = userRecommendMapper.getVOsByUserId(1);
+        var list = userRecommendMapper.getVOsByUserId(userId);
         Assertions.assertNotNull(list);
         System.out.println("用户1推荐数：" + list.size());
     }
@@ -75,14 +78,14 @@ public class RecommendServiceTest {
     @Test
     @Order(5)
     public void testGetLastRecommendTime() {
-        var time = userRecommendMapper.getLastRecommendTime(1);
+        var time = userRecommendMapper.getLastRecommendTime(userId);
         System.out.println("最后推荐时间：" + time);
     }
 
     @Test
     @Order(6)
     public void testRecommendByBehavior() {
-        RecommendListVO vo = recommendService.recommendByBehavior(1, 5);
+        RecommendListVO vo = recommendService.recommendByBehavior(userId, 5);
         Assertions.assertNotNull(vo);
         Assertions.assertNotNull(vo.getRecommendations());
         System.out.println("推荐结果数：" + vo.getRecommendations().size());
@@ -92,7 +95,7 @@ public class RecommendServiceTest {
     @Order(7)
     public void testSelectByUserId() {
         List<UserRecommend> list = userRecommendMapper.selectList(
-            new LambdaQueryWrapper<UserRecommend>().eq(UserRecommend::getUserId, 1)
+            new LambdaQueryWrapper<UserRecommend>().eq(UserRecommend::getUserId, userId)
         );
         Assertions.assertNotNull(list);
     }

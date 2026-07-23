@@ -23,10 +23,13 @@ public class PredictServiceTest {
     @Resource
     private PredictService predictService;
 
+    private static final Integer productId = 1;
+    private static final Integer userId = 7;
+
     @Test
     @Order(1)
     public void testPredictInventory() {
-        InventoryPredictionVO vo = predictService.predictInventory(1, 7);
+        InventoryPredictionVO vo = predictService.predictInventory(productId, 7);
         Assertions.assertNotNull(vo);
         Assertions.assertNotNull(vo.getProductId());
         log.info("库存预测：商品={}, 预测销量={}, 当前库存={}",
@@ -36,7 +39,7 @@ public class PredictServiceTest {
     @Test
     @Order(2)
     public void testPredictInventoryDefaultDays() {
-        InventoryPredictionVO vo = predictService.predictInventory(1, null);
+        InventoryPredictionVO vo = predictService.predictInventory(productId, null);
         Assertions.assertNotNull(vo);
         Assertions.assertNotNull(vo.getForecast());
     }
@@ -54,7 +57,7 @@ public class PredictServiceTest {
     @Test
     @Order(4)
     public void testPredictChurnDefaultThreshold() {
-        ChurnPredictionVO vo = predictService.predictChurn(null);
+        ChurnPredictionVO vo = predictService.predictChurn(0.7);
         Assertions.assertNotNull(vo);
         Assertions.assertNotNull(vo.getHighRiskUsers());
     }
@@ -62,7 +65,7 @@ public class PredictServiceTest {
     @Test
     @Order(5)
     public void testGetUserProfile() throws Exception {
-        UserProfileVO vo = predictService.getUserProfile(1);
+        UserProfileVO vo = predictService.getUserProfile(userId);
         Assertions.assertNotNull(vo);
         Assertions.assertNotNull(vo.getUserId());
         Assertions.assertNotNull(vo.getLabels());

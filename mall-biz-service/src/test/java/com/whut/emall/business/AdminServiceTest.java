@@ -55,7 +55,7 @@ public class AdminServiceTest {
             "ADMIN"
         );
         Assertions.assertNotNull(user);
-        Assertions.assertEquals(TEST_EMAIL, user.getEmail());
+        Assertions.assertEquals("测试管理员", user.getUsername());
         testUserId = user.getId();
         System.out.println("创建管理员ID：" + testUserId);
     }
@@ -107,9 +107,9 @@ public class AdminServiceTest {
         SysUser user = sysUserMapper.selectById(testUserId);
         Assertions.assertEquals(UserStatus.INVALID, user.getStatus());
 
-        adminService.setUserStatus(testUserId, UserStatus.NORMAL);
+        adminService.setUserStatus(testUserId, UserStatus.VALID);
         SysUser user2 = sysUserMapper.selectById(testUserId);
-        Assertions.assertEquals(UserStatus.NORMAL, user2.getStatus());
+        Assertions.assertEquals(UserStatus.VALID, user2.getStatus());
     }
 
     @Test

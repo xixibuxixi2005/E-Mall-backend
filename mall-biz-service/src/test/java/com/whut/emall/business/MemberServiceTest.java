@@ -51,7 +51,7 @@ public class MemberServiceTest {
         member.setPassword("$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy");
         member.setPhone("13800138000");
         member.setLevel(MemberLevel.NORMAL);
-        member.setStatus(UserStatus.NORMAL);
+        member.setStatus(UserStatus.VALID);
         boolean result = memberService.addMember(member);
         Assertions.assertTrue(result);
         Member saved = memberService.getMemberByEmail(TEST_EMAIL);
@@ -110,7 +110,7 @@ public class MemberServiceTest {
     @Order(8)
     public void testSelectByCondition() {
         LambdaQueryWrapper<Member> wrapper = new LambdaQueryWrapper<>();
-        wrapper.eq(Member::getStatus, UserStatus.NORMAL);
+        wrapper.eq(Member::getStatus, UserStatus.VALID);
         var list = memberMapper.selectList(wrapper);
         Assertions.assertNotNull(list);
         System.out.println("正常状态会员数：" + list.size());

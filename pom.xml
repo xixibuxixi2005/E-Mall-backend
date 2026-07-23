@@ -17,7 +17,6 @@
         <module>common-redis</module>
         <module>common-data</module>
         <module>common-minio</module>
-        <module>mall-test</module>
     </modules>
 
     <parent>

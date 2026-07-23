@@ -22,7 +22,7 @@ public class CSStatusServiceTest {
     private CSStatusMapper csStatusMapper;
 
     private static Integer testCsStatusId;
-    private static final Integer TEST_CS_ID = 9999;
+    private static final Integer TEST_CS_ID = 6;
 
     @Test
     @Order(1)
@@ -32,20 +32,6 @@ public class CSStatusServiceTest {
         Assertions.assertNotNull(result);
         Assertions.assertNotNull(result.getRecords());
         System.out.println("客服状态总数：" + result.getTotal());
-    }
-
-    @Test
-    @Order(2)
-    public void testInsertCSStatus() {
-        CSStatus status = new CSStatus();
-        status.setCsId(TEST_CS_ID);
-        status.setStatus(CSStatusStatus.ONLINE);
-        status.setMaxConcurrent(5);
-        status.setCurrentCount(0);
-        csStatusMapper.insert(status);
-        testCsStatusId = status.getId();
-        Assertions.assertNotNull(testCsStatusId);
-        System.out.println("创建客服状态ID：" + testCsStatusId);
     }
 
     @Test

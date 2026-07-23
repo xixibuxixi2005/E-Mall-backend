@@ -58,8 +58,8 @@ public class SentimentServiceTest {
         );
         BatchSentimentVO vo = sentimentService.analyze(comments);
         Assertions.assertNotNull(vo);
-        Assertions.assertNotNull(vo.getSentiments());
-        log.info("批量分析结果：正面={}, 中性={}, 负面={}", vo.getPositiveCount(), vo.getNeutralCount(), vo.getNegativeCount());
+        Assertions.assertNotNull(vo.results());
+        log.info("批量分析结果：正面={}, 中性={}, 负面={}", vo.positive(), vo.neutral(), vo.negative());
     }
 
     @Test

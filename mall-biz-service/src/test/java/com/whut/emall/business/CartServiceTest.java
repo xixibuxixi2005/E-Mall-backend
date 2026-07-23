@@ -35,7 +35,7 @@ public class CartServiceTest {
 
     private static Integer testCartId;
     private static Integer testProductId;
-    private static final Integer TEST_USER_ID = 9999;
+    private static final Integer TEST_USER_ID = 7;
 
     @Test
     @Order(1)

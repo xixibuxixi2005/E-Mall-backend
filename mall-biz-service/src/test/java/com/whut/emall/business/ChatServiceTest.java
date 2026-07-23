@@ -10,7 +10,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.whut.emall.business.entity.ChatMessage;
 import com.whut.emall.business.entity.ChatSession;
-import com.whut.emall.business.entity.enums.SessionMode;
 import com.whut.emall.business.entity.enums.SessionStatus;
 import com.whut.emall.business.mapper.ChatMessageMapper;
 import com.whut.emall.business.mapper.ChatSessionMapper;
@@ -37,6 +36,7 @@ public class ChatServiceTest {
 
     private static Integer testSessionId;
     private static Integer testMessageId;
+    private static final Integer userId = 7;
 
     @Test
     @Order(1)
@@ -51,7 +51,7 @@ public class ChatServiceTest {
     @Test
     @Order(2)
     public void testStartChat() {
-        var vo = chatService.startChat(1, "PRODUCT", "1", "测试消息：这是一个测试");
+        var vo = chatService.startChat(userId, "PRODUCT", "1", "测试消息：这是一个测试");
         Assertions.assertNotNull(vo);
         Assertions.assertNotNull(vo.getSessionNo());
         testSessionId = vo.getId();
@@ -62,7 +62,7 @@ public class ChatServiceTest {
     @Order(3)
     public void testGetSessionStatus() {
         if (testSessionId == null) return;
-        var vo = chatService.getSessionStatus(1, testSessionId);
+        var vo = chatService.getSessionStatus(userId, testSessionId);
         Assertions.assertNotNull(vo);
         Assertions.assertEquals(SessionStatus.WAITING, vo.getStatus());
     }
@@ -71,7 +71,7 @@ public class ChatServiceTest {
     @Order(4)
     public void testSendMessage() {
         if (testSessionId == null) return;
-        var vo = chatService.sendMessage(1, SenderType.USER, testSessionId, "测试消息内容", MessageType.TEXT, null);
+        var vo = chatService.sendMessage(userId, SenderType.USER, testSessionId, "测试消息内容", MessageType.TEXT, null);
         Assertions.assertNotNull(vo);
         Assertions.assertNotNull(vo.getContent());
         testMessageId = vo.getId();
@@ -81,7 +81,7 @@ public class ChatServiceTest {
     @Order(5)
     public void testListMessages() {
         if (testSessionId == null) return;
-        ChatMessageListVO vo = chatService.listMessages(1, 1, 10, testSessionId);
+        ChatMessageListVO vo = chatService.listMessages(userId, 1, 10, testSessionId);
         Assertions.assertNotNull(vo);
         Assertions.assertNotNull(vo.getList());
         System.out.println("消息总数：" + vo.getTotal());
@@ -90,7 +90,7 @@ public class ChatServiceTest {
     @Test
     @Order(6)
     public void testListSessions() {
-        ChatSessionListVO vo = chatService.listSessions(1, 1, 10);
+        ChatSessionListVO vo = chatService.listSessions(userId, 1, 10);
         Assertions.assertNotNull(vo);
         Assertions.assertNotNull(vo.getList());
     }
@@ -137,7 +137,7 @@ public class ChatServiceTest {
             session.setCsId(2);
             sessionMapper.updateById(session);
         }
-        chatService.endSession(1, testSessionId);
+        chatService.endSession(userId, testSessionId);
         ChatSession ended = sessionMapper.selectById(testSessionId);
         Assertions.assertEquals(SessionStatus.FINISHED, ended.getStatus());
         System.out.println("结束会话ID：" + testSessionId);

@@ -80,7 +80,7 @@ public class CommonUtilsTest {
         Assertions.assertNotNull(payload);
         Assertions.assertEquals(TEST_PAYLOAD.getUserId(), payload.getUserId());
         Assertions.assertEquals(TEST_PAYLOAD.getEmail(), payload.getEmail());
-        Assertions.assertEquals(TEST_PAYLOAD.getRole(), payload.getRole());
+        Assertions.assertEquals(TEST_PAYLOAD.getRoleCode(), payload.getRoleCode());
     }
 
     @Test
