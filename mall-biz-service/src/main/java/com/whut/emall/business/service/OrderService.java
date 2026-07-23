@@ -56,7 +56,6 @@ public class OrderService extends ServiceImpl<OrderMapper, Order>{
         Order order = orderMapper.selectById(id);
         if (order == null)
             throw ApiException.err(404, "订单不存在");
-        order.setStatus(status);
         switch (status) {
             case PAID:
                 if (order.getStatus() != OrderStatus.PENDING)
@@ -73,6 +72,7 @@ public class OrderService extends ServiceImpl<OrderMapper, Order>{
             default:
                 break;
         }
+        order.setStatus(status);
         orderMapper.updateById(order);
     }
 

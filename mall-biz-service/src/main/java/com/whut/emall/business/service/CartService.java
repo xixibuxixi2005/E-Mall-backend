@@ -61,7 +61,7 @@ public class CartService {
     }
 
     public void update(Integer userId, Integer cartId, Integer quantity) {
-        CartDetailVO cartItem = cartMapper.getDetailByUserIdAndProductId(userId, cartId);
+        CartDetailVO cartItem = cartMapper.getDetailByUserIdAndId(userId, cartId);
         if (cartItem == null)
             throw ApiException.err(404, "购物车商品不存在");
         if (quantity > cartItem.getStock())

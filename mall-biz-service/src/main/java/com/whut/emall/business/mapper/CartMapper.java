@@ -50,6 +50,23 @@ public interface CartMapper extends BaseMapper<Cart> {
         """)
     List<CartDetailVO> listUserCartItems(Integer userId);
 
+    @Select("""
+        SELECT c.id as cart_id,
+               c.product_id,
+               p.name AS product_name,
+               p.price AS product_price,
+               p.original_price AS original_price,
+               JSON_UNQUOTE(JSON_EXTRACT(p.image_urls, '$[0]')) AS product_image,
+               c.quantity,
+               p.stock,
+               c.selected,
+               c.create_time AS createTime
+        FROM cart c
+        LEFT JOIN product p ON c.product_id = p.id
+        WHERE c.user_id = #{userId} AND c.id = #{cartId}
+        """)
+    CartDetailVO getDetailByUserIdAndId(Integer userId, Integer cartId);
+
     @Update("UPDATE cart SET quantity = #{quantity} WHERE id = #{cartId} AND user_id = #{userId}")
     int updateQuantity(Integer userId, Integer cartId, Integer quantity);
 
