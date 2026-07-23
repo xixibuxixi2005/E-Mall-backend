@@ -58,3 +58,7 @@ minio:
   endpoint: http://127.0.0.1:9000
   access_key: minioadmin
   secret_key: minioadmin
+
+logging:
+  level:
+    '[com.whut.emall.ai.tools]': debug
