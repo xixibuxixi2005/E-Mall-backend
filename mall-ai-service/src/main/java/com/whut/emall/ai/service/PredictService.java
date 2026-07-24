@@ -38,8 +38,7 @@ public class PredictService {
             + "2) currentStock 为当前库存；"
             + "3) suggestedRestock 为建议补货量；"
             + "4) confidenceInterval 为长度2的数组，表示保守与乐观预测区间；"
-            + "5) forecast 为按天输出的销售趋势；"
-            + "6) 保持 JSON 结构稳定。";
+            + "5) forecast 为按天输出的销售趋势；";
         String question = "商品ID=" + productId + ", 预测天数=" + forecastDays;
 
         InventoryPredictionVO result = llmService.customPromptStructCall(

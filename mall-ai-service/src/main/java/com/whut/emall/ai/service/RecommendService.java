@@ -33,7 +33,7 @@ public class RecommendService {
     private void updateUserRecommend(int userId, int size) {
         String prompt = """
 你是电商推荐引擎。请基于用户购物车和历史订单生成个性化商品推荐。
-要求输出JSON，字段为AIRecommend对象数组。
+字段为AIRecommend对象数组。
 score范围0到1，按相关性降序，生成%d个推荐结果（若不足可减少数量）。
 用户ID：%d
 请优先推荐与购物车商品同类、互补、复购相关的商品。

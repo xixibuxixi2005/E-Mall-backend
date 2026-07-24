@@ -44,7 +44,7 @@ public class LLMService {
 
     public <T> T customPromptStructCall(String prompt, String question, Class<T> responseType, Object ...tools) {
         ChatClient client = ChatClient.builder(chatModel).build();
-        var spec = client.prompt().system(prompt).user(question);
+        var spec = client.prompt().system("!必须输出纯JSON格式，不得添加其他文字!\n"+prompt).user(question);
         for (var tool: tools) {
             spec.tools(tool);
         }
