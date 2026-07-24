@@ -23,7 +23,7 @@ public class LLMService {
             var doc = docs.get(i);
             builder.append(String.format(
                 "[参考%d(置信度:%f),分块序号:%d]标题：%s\n%s\n\n",
-                i+1, doc.getScore(), doc.getMetadata().get("docTitle"), doc.getMetadata().get("chunkIndex"), doc.getText()
+                i+1, doc.getScore(), ((Double)doc.getMetadata().get("chunkIndex")).intValue(), doc.getMetadata().get("docTitle"), doc.getText()
             ));
         }
         return builder.toString();
